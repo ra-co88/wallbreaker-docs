@@ -1,0 +1,70 @@
+---
+title: "WebUI V2"
+---
+
+import { Callout, Terminal } from "../../components";
+
+# WebUI V2
+
+The unified operator surface for the browser. V2 separates **operation** from **observation**: the Agent view runs and steers the Attack → Target → Judge loop, while Live observes the current execution or any historical run.
+
+<Terminal lines={[
+  { prompt: "(.venv) $ ", cmd: "wallbreaker dashboard" },
+  { comment: "# WebUI V2: http://127.0.0.1:8787/v2 — legacy dashboard: /legacy" },
+]} />
+
+Build the frontend first if you run from a checkout (`cd wallbreaker/dashboard/web && npm install && npm run build`); otherwise the backend serves only its API.
+
+## Access & Authentication
+
+The dashboard binds to loopback (`127.0.0.1:8787`) by default and launches with **token authentication enabled** (`require_auth=True`). At startup the token is printed to the terminal and written to a token file; the frontend authenticates API calls with the `X-WB-Token` header.
+
+Exposing the dashboard beyond loopback is an explicit, acknowledged risk:
+
+<Terminal lines={[{ prompt: "(.venv) $ ", cmd: "wallbreaker dashboard --host 0.0.0.0 --allow-network" }]} />
+
+Do this only behind an access-controlled boundary. Run history contains prompts, responses, reasoning, tool arguments, and generated artifacts.
+
+## What V2 Adds
+
+| Capability | What it means |
+|------------|---------------|
+| **Queued executions** | Server-owned run lifecycle with pause, resume, steering, attacker switching, and cancellation |
+| **Reconnectable events** | Sequenced event streams — a dropped connection resumes where it left off |
+| **Canonical JSONL history** | `sessions/run-*.jsonl` is the source of truth; a rebuildable SQLite index powers search and cross-run correlation |
+| **Persistent state** | Drafts, selected views, conversation and workflow state survive navigation |
+
+## Surfaces
+
+- **Agent** — run and steer engagements; persistent multi-turn Compose
+- **Live** — observe the current execution or select a historical run
+- **Runs & Logs** — explore run-log files, rebuild the history index
+- **Workflow Studio** — sequence operations into workflows and reconstruct past ones
+- **Findings** — cross-run findings with evidence reports
+- **Reports** — engagement summaries and exportable evidence
+- **Models** — provider verification: create, edit, test, enable/disable providers (credentials are redacted from API responses and execution history)
+- **Arsenal** — presets, transforms, and tools management
+- **Settings** — profile management
+
+A typed capability catalog (`wallbreaker/capabilities.py`) keeps the TUI as the canonical contract — every registered operation is discoverable from V2.
+
+## History & Local State
+
+| Path | Purpose |
+|------|---------|
+| `config.toml` | Provider definitions, profiles, active role configuration |
+| `sessions/run-*.jsonl` | Canonical portable execution history |
+| `sessions/.wallbreaker_history.sqlite3` | Rebuildable search/correlation index |
+
+JSONL is the source of truth — the SQLite index may be deleted and rebuilt from the Runs & Logs screen (or `POST /api/v2/history/rebuild`) at any time. Archive or remove canonical run files only when you intend to remove that evidence.
+
+## Legacy Dashboard
+
+The original dashboard remains available at `/legacy` — see [Web Dashboard](/docs/getting-started/webui) for the classic Overview / Attack Console / Arsenal tour.
+
+<Callout type="danger">For authorized security testing only. Run history is sensitive data.</Callout>
+
+<a className="wb-next-card" href="/docs/concepts/agent-loop">
+  <div><div className="wb-next-card-label">Next</div><div className="wb-next-card-title">Agent Loop →</div></div>
+  <span className="wb-next-card-arrow">→</span>
+</a>

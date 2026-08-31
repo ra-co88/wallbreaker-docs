@@ -25,17 +25,26 @@ Wallbreaker generates adversarial prompts and records model responses for evalua
 
 | Directory | Contents |
 |-----------|----------|
-| `wb_runs/` | Engagement summaries and run logs |
+| `sessions/run-*.jsonl` | Canonical run logs (JSONL, one object per event) and saved sessions (`autosave.json`) |
+| `wb_runs/` | Engagement artifacts and summaries |
 | `wb_images/` | Generated images (session cards, T2I outputs, typographic payloads) |
 | `wb_artifacts/` | Crafted payloads and persona files |
 | `findings/` | Exported findings documents |
-| `sessions/` | JSONL run logs and saved sessions |
+| `library/` | Runtime-fetched corpora (HarmBench, L1B3RT4S, ENI, P4RS3LT0NGV3) with `library.lock.toml` SHA pins |
 
 All of these are **gitignored** — keep them out of version control and handle them as sensitive data.
 
 ## Sandbox Containment
 
-The `run_shell` tool executes commands in the harness working directory. The `write_file` and `edit_file` tools confine targets to `ctx.cwd` via `_confine` — absolute paths that escape the working directory are redirected, and `..` traversal is blocked. This prevents the agent from writing to arbitrary filesystem locations.
+The `run_shell` tool executes commands in the harness working directory. The `write_file`, `edit_file`, and `patch_file` tools confine targets to `ctx.cwd` via `_confine` — realpath containment means absolute paths that escape the working directory are redirected, and `..` traversal or escaping symlinks are blocked. This prevents the agent from writing to arbitrary filesystem locations.
+
+## Dashboard & Egress Hardening
+
+The web dashboard launches with **token authentication enabled** (`require_auth=True`): a token is generated at startup, printed to the terminal and stored in a token file, and every API call must present it via the `X-WB-Token` header. The server binds to loopback by default; exposing it beyond loopback requires an explicit `--allow-network` acknowledgement.
+
+Outbound requests from tool calls pass through the **egress guard** (`tools/egress_guard.py`): DNS-resolved IPs are checked against private/link-local ranges (SSRF defense), redirect chains are validated, and the dashboard's provider transport is **pinned** to validated addresses so a hostname cannot silently re-resolve to an internal host mid-session.
+
+A **tool policy** layer (`tools/tool_policy.py`) governs which tools the agent may invoke, and runtime-fetched corpora are integrity-checked against the SHA pins in `library.lock.toml` — a mismatch fails closed rather than loading tampered data.
 
 ## Reporting Vulnerabilities in Wallbreaker
 
@@ -58,7 +67,8 @@ Include reproduction steps and impact assessment.
 | Generated payloads | Potentially harmful | Gitignored; do not redistribute |
 | Findings reports | Sensitive | Share only with authorized stakeholders |
 | Config files | Contains API keys | `config.toml` is gitignored |
-| State files | Contains session data | `.wallbreaker_state.json` is gitignored |
+| State files | Runtime preferences | `.wallbreaker_state.json` is gitignored (non-secret: preferences and UI references) |
+| Credential files | Contains API keys | `.env` is gitignored; prefer `api_key_env` |
 
 ## License Compliance
 

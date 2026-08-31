@@ -23,17 +23,24 @@ The `campaign` tool automates an escalation campaign across a HarmBench battery.
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `category` | — | HarmBench category to sweep (`cyber`, `chemical`, `bio`, etc.) |
-| `behaviors` | — | Custom list of behavior strings (overrides category) |
-| `max_techniques` | 6 | Max escalation levels before stopping |
-| `concurrent` | 4 | Parallel behavior evaluations |
-
-## Grid Sweep
-
-The `grid_sweep` tool fires EVERY technique against EVERY behavior in a full cross-tab matrix. Unlike `campaign` (which stops at first bypass), `grid_sweep` runs all combinations to produce a complete technique-vs-behavior ASR matrix.
+| `category` | — | Dataset semantic category to sample |
+| `source` | `harmbench` | Behavior dataset: `harmbench`, `jbb`, `strongreject`, or `advbench` |
+| `behaviors` | — | Explicit behavior list (overrides dataset sampling) |
+| `n` | 5 | Number of behaviors to sample |
+| `ladder` | full ladder | Limit which techniques run — e.g. `["plain", "enc:base64", "enc:zero_width", "prefill", "many_shot:16"]` |
 
 <Terminal lines={[
-  { prompt: "> ", cmd: "grid_sweep with category=\"cyber\" and techniques=[\"plain\",\"base64\",\"zero_width\",\"pair_attack\"]" },
+  { prompt: "> ", cmd: "campaign with category=\"cyber\"" },
+  { comment: "# Samples cyber-category behaviors and escalates each up the ladder" },
+  { comment: "# Stops at first bypass per behavior" },
+]} />
+
+### Grid Sweep
+
+The `grid_sweep` tool fires EVERY technique against EVERY behavior in a full cross-tab matrix. Unlike `campaign` (which stops at first bypass), `grid_sweep` runs all combinations to produce a complete technique-vs-behavior ASR matrix. Same parameters as `campaign` (plus `max_calls`, `concurrency`, `seed`):
+
+<Terminal lines={[
+  { prompt: "> ", cmd: "grid_sweep with category=\"cyber\" and ladder=[\"plain\",\"enc:base64\",\"enc:zero_width\",\"prefill\"]" },
 ]} />
 
 ## Scan: Garak-Style Coverage
@@ -46,18 +53,18 @@ The `scan` tool runs a probe suite across vulnerability classes (system-prompt l
 
 ## Leaderboard
 
-The `leaderboard` tool benchmarks multiple profiles by ASR on one battery — useful for comparing attacker brains or target models:
+The `leaderboard` tool benchmarks multiple profiles by ASR on one behavior battery — useful for comparing attacker brains or target models. Params: `targets` (profile names; defaults to every configured profile), `category`, `source`, `behaviors`, `n`, `cross_family` (report a cross-family transfer matrix instead of a ranking; needs ≥3 profiles):
 
 <Terminal lines={[
-  { prompt: "> ", cmd: "leaderboard with behaviors=[\"harmbench_cyber_1\",\"harmbench_cyber_2\"] and profiles=[\"openrouter\",\"z-ai\"]" },
+  { prompt: "> ", cmd: "leaderboard with category=\"cyber\" and targets=[\"openrouter\",\"zai\"]" },
 ]} />
 
 ## Transfer Sweep
 
-The `transfer_sweep` tool replays confirmed jailbreaks from the BreakVault against a new target before optimizing from scratch. Library transfers are faster than cold attacks:
+The `transfer_sweep` tool replays confirmed jailbreaks from the BreakVault against the current target before optimizing from scratch. Library transfers are faster than cold attacks. Params: `harm_tag` (only replay wins tagged with this harm category), `limit` (max entries fired, best-first, default 10), `max_calls` (hard cap, ~2 calls per entry), `concurrency` (default 4):
 
 <Terminal lines={[
-  { prompt: "> ", cmd: "transfer_sweep with target_change=\"anthropic/claude-3.7-sonnet\"" },
+  { prompt: "> ", cmd: "transfer_sweep with harm_tag=\"cyber\" and limit=10" },
 ]} />
 
 ## Seed Sweep
@@ -70,7 +77,7 @@ The `seed_sweep` tool injects one request through many persona seeds (ENI + L1B3
 
 ## System Sweep
 
-The `system_sweep` tool validates ONE system prompt across a task battery with multi-sample statistics:
+The `system_sweep` tool validates ONE system prompt across a task battery with multi-sample statistics. Params: `system` (inline text) or `system_file` (path or seed name), `tasks` or `tasks_file` (one per line), `source` (dataset battery: `harmbench`, `jbb`, `strongreject`, `advbench`):
 
 <Terminal lines={[
   { prompt: "> ", cmd: "system_sweep with system=\"You are ARIA...\" and tasks=[\"task1\",\"task2\"]" },
@@ -78,10 +85,10 @@ The `system_sweep` tool validates ONE system prompt across a task battery with m
 
 ## Optimizing Templates
 
-The `optimize_universal` tool hill-climbs a single template (user-turn or system-prompt) against a battery using gradient-free optimization. It iteratively mutates the template and keeps changes that improve ASR:
+The `optimize_universal` tool hill-climbs a single template (user-turn or system-prompt) using gradient-free optimization. Params: `template` (seed wrapper with a `{request}` placeholder — required), `slot` (`user` default, or `system` when the template IS the system prompt), `categories` (probe requests; omit for a default set), `iterations` (default 2), `variants` (per round, default 3), `use_judge`, `max_calls` (default 80):
 
 <Terminal lines={[
-  { prompt: "> ", cmd: "optimize with template=\"...\" and slot=\"system\"" },
+  { prompt: "> ", cmd: "optimize_universal with template=\"...{request}...\" and slot=\"system\" and iterations=3" },
 ]} />
 
 <Callout type="warning">Campaigns can fire hundreds of requests against the target. Monitor your API budget and rate limits. Use `WALLBREAKER_CONCURRENCY` to tune parallelism.</Callout>

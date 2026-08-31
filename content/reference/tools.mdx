@@ -6,7 +6,7 @@ import { Callout } from "../../components";
 
 # Tools Reference
 
-<Callout type="info">104 tools registered across 72 modules in `wallbreaker/tools/`. Use `/tools` in the TUI to see them live during a session.</Callout>
+<Callout type="info">104 tools registered across 72 modules in `wallbreaker/tools/` (including the `zetalib_*` / `ultrabreaks_*` seed-library tools). Use `/tools` in the TUI to see them live during a session.</Callout>
 
 Tools are the agent's action primitives. Each one registers into a `ToolRegistry` via `register(registry)` in its module. The attacker brain calls tools autonomously in the agent loop, or the operator invokes them via slash commands.
 
@@ -129,9 +129,12 @@ Tools are the agent's action primitives. Each one registers into a `ToolRegistry
 
 | Tool | Description |
 |------|-------------|
-| `_get` | Fetch a jailbreak seed from  by file name, or name='all' for every file. |
-| `_list` | List the jailbreak seed files in the  library. |
-| `_search` | Keyword-search the  jailbreak library across all seed files. |
+| `zetalib_get` | Fetch a jailbreak seed from ZetaLib (Exocija) by file name, or name='all' for every file. |
+| `zetalib_list` | List the jailbreak seed files in the ZetaLib library. |
+| `zetalib_search` | Keyword-search the ZetaLib jailbreak library across all seed files. |
+| `ultrabreaks_get` | Fetch a jailbreak seed from UltraBr3aks by file name, or name='all' for every file. |
+| `ultrabreaks_list` | List the jailbreak seed files in the UltraBr3aks library. |
+| `ultrabreaks_search` | Keyword-search the UltraBr3aks jailbreak library across all seed files. |
 | `narrate` | Fiction-frame + in-story prefill attack: wrap the request as a pivotal chapter of a novel where a character explains it in full technical detail, and (by default) seed the assistant's reply so it continues the story instead of refusing. |
 
 ## Multimodal

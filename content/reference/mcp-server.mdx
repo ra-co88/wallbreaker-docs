@@ -1,0 +1,64 @@
+---
+title: "MCP Server"
+---
+
+import { Callout, Terminal } from "../../components";
+
+# MCP Server
+
+Wallbreaker ships as a native MCP (Model Context Protocol) tool server: any MCP-compatible agent — Claude Code, Cursor, Windsurf, Gemini CLI, Codex CLI — can drive its red-team capabilities as ordinary tools, without modification.
+
+<Terminal lines={[
+  { prompt: "$ ", cmd: "python -m wallbreaker_mcp" },
+  { comment: "# stdio JSON-RPC 2.0 — wire it into any MCP client config" },
+]} />
+
+Do not confuse the two directions:
+
+- **Wallbreaker as MCP client** — `[[mcp.servers]]` in `config.toml` spawns external tool servers and proxies their tools into the registry (see [Configuration](/docs/getting-started/configuration)).
+- **Wallbreaker as MCP server** — this page: the `wallbreaker_mcp` package exposes Wallbreaker's capabilities *to* other agents.
+
+## The `wb_*` Tools
+
+| Tool | What it does |
+|------|-------------|
+| `wb_attack` | Run one attack round against a target LLM. Params: `objective` (required), `target_model` (required, e.g. `openai/gpt-4o`), `max_rounds` (1–10, default 3), `dataset` (`harmbench`/`advbench`/`jbb`). Returns `attack_prompt`, `judge_score` ∈ [0, 1], `rounds`, `success` |
+| `wb_judge` | Score a model response against a harmful objective. Params: `objective`, `response`. Returns `score` ∈ [0, 1], `rationale`, `compliant` (true iff score ≥ 0.7) |
+| `wb_seed_list` | Discovery entry point: list available attack seed categories from gem corpora (UltraBr3aks, ZetaLib), HarmBench, AdvBench, and the built-in static bank. Returns an empty list (not an error) when a source has no cached data |
+| `wb_generate_payloads` | Generate adversarial text payloads for perturbation testing. Params: `category`, `n` (default 10), `source` (`gem`/`harmbench`/`advbench`/`dispatch_library`). Falls back to the built-in static seed bank when external data is not cached |
+
+The static seed bank ships three canonical categories × 10 payloads each — `cybercrime`, `jailbreak_universal`, `context_escape` — so `wb_seed_list` and `wb_generate_payloads` return non-empty results on a clean checkout before any dataset is fetched.
+
+<Callout type="info">`wb_attack` and `wb_judge` need `OPENAI_API_KEY` in the environment (set in the server's `env` block). Without it, `wb_attack` returns a structured error dict — not a crash. `wb_seed_list` and the static fallback of `wb_generate_payloads` work fully offline.</Callout>
+
+## Client Configuration
+
+`docs/mcp_client_config.json` in the repo is a ready-to-adapt template wiring both `p4rs3lt0ngv3` and `wallbreaker` servers:
+
+```json
+{
+  "mcpServers": {
+    "wallbreaker": {
+      "command": "python",
+      "args": ["-m", "wallbreaker_mcp"],
+      "env": { "OPENAI_API_KEY": "${OPENAI_API_KEY}" }
+    }
+  }
+}
+```
+
+Drop this block into your client's config — Claude Code (`~/.claude/mcp.json`), Cursor (`.cursor/mcp.json`), Windsurf, Gemini CLI, or Codex CLI — and the four `wb_*` tools appear natively in that agent's tool list.
+
+## Smoke Test
+
+<Terminal lines={[
+  { prompt: "$ ", cmd: "./scripts/smoke_mcp.sh" },
+  { comment: "# 6 checks: both server packages import; all four wallbreaker tools callable (offline included). Exit 0 = pass" },
+]} />
+
+<Callout type="warning">This server exposes red-team capabilities. Run it only in environments where the connecting agent is authorized to use them — the MCP client inherits your Wallbreaker responsibilities, including authorized-targets-only.</Callout>
+
+<a className="wb-next-card" href="/docs/reference/tools">
+  <div><div className="wb-next-card-label">Next</div><div className="wb-next-card-title">Tools →</div></div>
+  <span className="wb-next-card-arrow">→</span>
+</a>

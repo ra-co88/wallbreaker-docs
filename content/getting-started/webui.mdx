@@ -1,14 +1,18 @@
 ---
-title: "Web Dashboard"
+title: "Legacy Web Dashboard"
 ---
 
 import { Callout, Terminal } from "../../components";
 
-# Web Dashboard
+# Legacy Web Dashboard
+
+The original dashboard — Overview, Attack Console, and Arsenal — remains available at `/legacy`. New engagements should prefer [WebUI V2](/docs/getting-started/webui-v2), which adds queued executions, steering, and the runs/workflows/reports surfaces.
 
 <Terminal lines={[
   { prompt: "(.venv) $ ", cmd: "wallbreaker dashboard" },
 ]} />
+
+The dashboard launches with token authentication enabled — the token is printed at startup and the frontend authenticates with the `X-WB-Token` header. See [WebUI V2 → Access & Authentication](/docs/getting-started/webui-v2) for details.
 
 ## Overview
 

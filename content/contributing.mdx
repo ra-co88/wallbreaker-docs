@@ -62,17 +62,24 @@ Dashboard contributors should also install the frontend:
 ```python
 # wallbreaker/tools/my_tool.py
 from __future__ import annotations
-from .registry import Tool
+
 
 def register(registry):
-    registry.register(Tool(
+    registry.add(
         name="my_tool",
         description="What it does",
-        parameters={...},
+        parameters={
+            "type": "object",
+            "properties": {
+                "target": {"type": "string", "description": "What to act on"},
+            },
+            "required": ["target"],
+        },
         handler=_handler,
-    ))
+    )
 
-async def _handler(ctx, **kwargs):
+
+async def _handler(ctx, target):
     ...
 ```
 

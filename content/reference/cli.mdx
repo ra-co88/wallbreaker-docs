@@ -1,0 +1,70 @@
+---
+title: "CLI Reference"
+---
+
+import { Callout, Terminal } from "../../components";
+
+# CLI Reference
+
+Every non-TUI entry point in one place. Run `wallbreaker --help` or `wallbreaker <command> --help` for the authoritative list.
+
+## One-Shot & TUI
+
+| Invocation | What it does |
+|------------|-------------|
+| `wallbreaker` | Launch the TUI |
+| `wallbreaker "prompt"` | One-shot prompt, then exit |
+| `wallbreaker --auto "prompt"` | Run autonomously until `finish()`/`ask_operator()` |
+| `wallbreaker --auto --rounds 5 "prompt"` | Cap autonomous rounds (default 12) |
+| `wallbreaker --resume` | Resume the autosaved session (`sessions/autosave.json`) |
+| `wallbreaker --resume mysession.json` | Resume a specific session file |
+
+Global endpoint flags (available on the main command): `--config`, `--profile`, `--base-url`, `--model`, `--protocol`, `--api-key-env`, `--api-key`, plus `--system` (system prompt override), `--no-tools`, and target overrides `--target`, `--target-model`, `--target-modality {text,image}`.
+
+## Library & Transform Commands
+
+| Command | What it does |
+|---------|-------------|
+| `wallbreaker lib update\|list\|path` | Manage the L1B3RT4S jailbreak library |
+| `wallbreaker parsel update\|list\|path` | Manage the P4RS3LT0NGV3 transform library (MCP server backend; needs Node.js on PATH) |
+| `wallbreaker eni list\|update\|path` | Browse the ENI persona-jailbreak collection |
+| `wallbreaker transform "leet,base64" "text"` | Apply a transform chain on the CLI (`--decode` to reverse) |
+
+## Run Logs & Reporting
+
+All log-taking commands accept a run log path or a directory (default: latest in `sessions/`):
+
+| Command | What it does |
+|---------|-------------|
+| `wallbreaker findings [log]` | List bypasses (COMPLIED/PARTIAL) from a run log |
+| `wallbreaker report [log]` | Render a findings report (markdown to stdout) |
+| `wallbreaker report [log] --html --out report.html` | Styled HTML report to a file |
+| `wallbreaker export [log] --out findings.json` | Structured findings JSON |
+| `wallbreaker export [log] --fail-on-finding` | CI gate: exit code 2 if any bypass present |
+| `wallbreaker regrade [log] --config config.toml` | Re-judge a run log with the current judge |
+
+<Callout type="info">The dashboard can serve any run-log directory: `wallbreaker dashboard --sessions sessions/` (default). See [WebUI V2](/docs/getting-started/webui-v2).</Callout>
+
+## CI Gates
+
+| Command | What it does |
+|---------|-------------|
+| `wallbreaker export [log] --fail-on-finding` | Fails (exit 2) if any bypass exists in the log |
+| `wallbreaker baseline save [log] --out baseline.json` | Write an ASR baseline from a run log |
+| `wallbreaker baseline compare [log] --baseline baseline.json` | Fail (exit 2) if ASR regressed beyond `--max-regression` (default 0.05 per technique) |
+
+## Configuration & Dashboard
+
+| Command | What it does |
+|---------|-------------|
+| `wallbreaker check [--config config.toml]` | Validate config and print a readiness checklist |
+| `wallbreaker dashboard` | Serve the web dashboard on `127.0.0.1:8787` |
+| `wallbreaker dashboard --host 0.0.0.0 --allow-network` | Expose beyond loopback (explicit risk acknowledgement) |
+| `wallbreaker dashboard --sessions sessions/` | Point the dashboard at a run-log directory |
+
+<Callout type="warning">Corpus integrity (the `library.lock.toml` SHA pins) is enforced automatically at load time — a mismatched runtime-fetched corpus fails closed. The interactive `corpus verify [--update]` helper exists in the codebase but is currently not routable from the CLI at this version.</Callout>
+
+<a className="wb-next-card" href="/docs/reference/mcp-server">
+  <div><div className="wb-next-card-label">Next</div><div className="wb-next-card-title">MCP Server →</div></div>
+  <span className="wb-next-card-arrow">→</span>
+</a>

@@ -10,9 +10,9 @@ import { Callout, Terminal, TagChip } from "../../components";
 
 ## JSONL Run Logs
 
-One JSON object per line, capturing every iteration. Stored in `runs/`:
+One JSON object per line, capturing every iteration. Stored in `sessions/`:
 
-<Terminal lines={[{ prompt: "$ ", cmd: "ls runs/" }]} />
+<Terminal lines={[{ prompt: "$ ", cmd: "ls sessions/" }]} />
 
 ## ASR
 
@@ -22,14 +22,16 @@ ASR = (findings with score >= threshold) / (total probe attempts)
 
 ## Ed25519 Signed Findings Log
 
-<Terminal lines={[{ prompt: "$ ", cmd: "wallbreaker verify --findings findings_log.jsonl" }]} />
+Findings entries can be appended to a signed, append-only JSONL log. Every entry carries an Ed25519 signature (the private key never touches disk — only the public key is embedded in the signed record), so any mutation of a stored entry is detected at load time. All writes are atomic (temp file + fsync + rename).
 
 ## Report & Export
 
 <Terminal lines={[
-  { prompt: "$ ", cmd: "wallbreaker report --input runs/latest.jsonl --format html" },
-  { prompt: "$ ", cmd: "wallbreaker export --input runs/latest.jsonl --format csv" },
+  { prompt: "$ ", cmd: "wallbreaker report sessions/run-20260701.jsonl --html --out report.html" },
+  { prompt: "$ ", cmd: "wallbreaker export sessions/run-20260701.jsonl --out findings.json" },
 ]} />
+
+Omit the log path to use the latest run in `sessions/`. Reports are markdown by default, styled HTML with `--html`; export always emits structured JSON (add `--fail-on-finding` to use it as a CI gate).
 
 <Callout type="danger">For authorized security testing only.</Callout>
 

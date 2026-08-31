@@ -21,7 +21,10 @@ import { Callout, Terminal } from "../../components";
 <Terminal lines={[
   { prompt: "$ ", cmd: "git clone https://github.com/JailbrokenAI/wallbreaker.git && cd wallbreaker" },
   { prompt: "$ ", cmd: "python -m venv .venv && source .venv/bin/activate" },
-  { prompt: "(.venv) $ ", cmd: 'pip install -e ".[dashboard,agents,all]"' },
+  { prompt: "(.venv) $ ", cmd: 'pip install -e ".[dashboard,barcodes,stego]"' },
+]} />
+
+<Callout type="info">Need the test suite too? Add `dev`: `pip install -e ".[dev,dashboard,barcodes,stego]"`. Available extras: `dev`, `dashboard`, `barcodes`, `stego`.</Callout>
 ]} />
 
 ## Keyless Claude Code CLI

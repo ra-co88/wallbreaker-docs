@@ -34,16 +34,18 @@ The agent plans, selects tools, sends payloads, and reports back. Steer mid-sess
 |---------|-------------|
 | `/target <model>` | Switch target |
 | `/model <model>` | Switch attacker profile |
-| `/status` | Session stats |
+| `/stats` | Session stats |
 | `/findings` | List findings |
-| `/help` | All commands |
+| `/help` | All commands (53 total, incl. `/validate`, `/transforms`, `/tools`, `/session`) |
 
 ## Headless / CI
 
 <Terminal lines={[
-  { prompt: "$ ", cmd: "wallbreaker run --config config.toml --preset harmful_basic" },
-  { prompt: "$ ", cmd: "wallbreaker report --input runs/latest.jsonl" },
+  { prompt: "$ ", cmd: 'wallbreaker --auto --rounds 3 "authorized objective here"' },
+  { comment: "# Agent loop runs autonomously, writes sessions/run-<timestamp>.jsonl, then exits" },
 ]} />
+
+Positional flags: `--profile`, `--model`, `--target`, `--target-model`, `--auto`, `--rounds`, `--resume`. Summarize results with `wallbreaker report` / `wallbreaker export` — see [Scripting & CI](/docs/guides/scripting).
 
 <Callout type="danger">For authorized security testing only.</Callout>
 

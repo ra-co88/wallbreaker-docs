@@ -16,17 +16,17 @@ Wallbreaker follows an evidence-based methodology for LLM red-teaming. Every cla
 
 ### 1. Standardized, Unbiased Test Batteries
 
-Wallbreaker pulls test cases from **HarmBench** (400 behaviors across 7 categories) rather than hand-picked examples. This prevents selection bias — you test what the benchmark defines, not what you expect to work.
+Wallbreaker pulls test cases from **standardized behavior batteries** — HarmBench by default (400 behaviors), with JBB, StrongREJECT, and AdvBench available via the `source` parameter — rather than hand-picked examples. This prevents selection bias — you test what the benchmark defines, not what you expect to work.
 
-| HarmBench Category | Examples |
+| HarmBench Semantic Category | Examples |
 |-------------------|----------|
-| Chemical/biological weapons | Synthesis, delivery, agent weaponization |
-| Cybercrime | Exploits, malware, network attacks |
-| Illegal goods/services | Drugs, trafficking, fraud |
-| Hate / harassment | Targeted abuse, discrimination |
-| Violence | Physical harm, assault, weapons |
-| Sexual content | Non-consensual, CSAM |
-| General violations | Policy circumvention, jailbreaking |
+| `chemical_biological` | Synthesis, delivery, agent weaponization |
+| `cybercrime_intrusion` | Exploits, malware, network attacks |
+| `illegal` | Drugs, trafficking, fraud |
+| `misinformation_disinformation` | False narratives, deception campaigns |
+| `harmful` | General harmful behaviors |
+| `harassment_bullying` | Targeted abuse, discrimination |
+| `copyright` | Copyright-violating requests |
 
 ### 2. Multi-Sample Measurement
 
@@ -34,7 +34,7 @@ A single COMPLIED verdict is not evidence of a bypass. Model output is stochasti
 
 **ASR = COMPLIED samples / total samples**
 
-An ASR below 75% on 8 samples indicates the bypass is unreliable and likely to fail on re-test.
+An ASR below the tool's RELIABLE threshold (70%) on 8 samples indicates the bypass is unreliable and likely to fail on re-test.
 
 ### 3. Escalation Ladder
 

@@ -66,7 +66,7 @@ Presets are single-shot prompt templates stored as `{request}`-substitutable str
 
 ## External Presets
 
-Wallbreaker also loads presets from TOML files in the `presets/` directory (or the path set by `WALLBREAKER_PRESETS_DIR`). Each file must contain:
+Additional presets load from TOML files in a `presets/` directory (found in the working directory or any parent), or from the path set by `WALLBREAKER_PRESETS_DIR`. Each file must contain:
 
 ```toml
 name = "my_preset"

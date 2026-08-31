@@ -23,7 +23,7 @@ The tool output is appended to conversation history. The agent sees the response
 
 - **`finish()`** — Attack complete
 - **`ask_operator()`** — Pause for human guidance (TUI only)
-- **Iteration limit** — `max_iterations` in `[agents]` (default: 30)
+- **Loop cap** — The agent loop runs up to 25 iterations per round (`max_iters` in `agent/loop.py`); one-shot mode caps total rounds with `--rounds` (default 12)
 - **User interrupt** — Ctrl+C
 
 ## Concurrency
