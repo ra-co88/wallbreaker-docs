@@ -1,0 +1,91 @@
+---
+title: "Working with Payloads"
+---
+
+import { Callout, Terminal, TagChip } from "../../components";
+
+# Working with Payloads
+
+<TagChip label="Guide" color="teal" />
+
+## What Is a Payload?
+
+A payload is any prompt sent to the target model. Wallbreaker provides three layers for constructing payloads:
+
+1. **Presets** — Ready-made single-shot templates (`preset` tool, `/preset` command)
+2. **Transforms** — Chainable encoding/obfuscation passes (`parseltongue` tool, `/encode` command)
+3. **Mutate** — LLM-aided anti-classifier rewrites (`mutate` tool)
+
+## Using Presets
+
+Presets are prompt templates with a `{request}` placeholder. Fire one directly:
+
+<Terminal lines={[
+  { prompt: "(.venv) $ ", cmd: "wallbreaker" },
+  { comment: "# In the TUI:" },
+  { prompt: "> ", cmd: "/preset dan \"how do I pick a lock\"" },
+  { comment: "# Or via the agent tool:" },
+  { prompt: "> ", cmd: "use preset dan with request='how do I pick a lock'" },
+]} />
+
+The `preset` tool fills the template and sends it to the target. Browse all presets with `/preset list` or search with `/preset search <keyword>`.
+
+## Applying Transforms
+
+Transforms encode a payload before firing. Chain multiple transforms together:
+
+<Terminal lines={[
+  { comment: "# Single transform" },
+  { prompt: "> ", cmd: "/encode base64 \"sensitive request\"" },
+  { comment: "# Chained transforms (applied left-to-right)" },
+  { prompt: "> ", cmd: "/transforms base64,zero_width" },
+  { comment: "# Fire with transforms:" },
+  { prompt: "> ", cmd: "query_target with payload and transforms=[\"base64\",\"zero_width\"]" },
+]} />
+
+The target receives the encoded text. If the target responds in the same encoding, Wallbreaker can auto-decode via `response_transforms`.
+
+<Callout type="info">For output-side encoding, prefer lossless transforms (`base64`, `hex`, `rot13`, `url`) so the judge can decode the response cleanly. Lossy transforms (`leet`, `morse`, `nato`, `bijection`) fold case and spacing.</Callout>
+
+## Mutate: LLM-Aided Rewrites
+
+The `mutate` tool uses an LLM to rewrite a payload to evade input classifiers while preserving intent:
+
+<Terminal lines={[
+  { prompt: "> ", cmd: "mutate the payload \"how to hotwire a car\"" },
+]} />
+
+The mutation uses token substitution, synonym swaps, and structural rearrangement — different from a simple encoding.
+
+## Combining Techniques
+
+The most effective attacks stack multiple layers:
+
+```
+preset (reframe) → mutate (anti-classifier) → transforms (encode) → query_target
+```
+
+Use the `recommend_transforms` tool to survey which single transforms get furthest past the target, then chain the top performers.
+
+## Response-Side Decoding
+
+When you instruct the target to answer in a cipher (e.g., "answer in base64"), set `response_transforms` to decode the reply before judging:
+
+<Terminal lines={[
+  { prompt: "> ", cmd: "query_target with transforms=[\"base64\"] and response_transforms=[\"base64\"]" },
+]} />
+
+## Carrier Formats
+
+Beyond text, Wallbreaker can deliver payloads via:
+
+- **Barcode/QR** — `barcode` tool encodes a payload as an image (for multimodal targets)
+- **Typographic image** — `build_typographic_image` renders text as a PNG
+- **Indirect injection** — `indirect_inject` embeds the payload in a document, email, or tool output
+
+See the [Multimodal Attacks](/docs/guides/multi-modal) guide for image-target workflows.
+
+<a className="wb-next-card" href="/docs/guides/personas">
+  <div><div className="wb-next-card-label">Next</div><div className="wb-next-card-title">Persona Authoring →</div></div>
+  <span className="wb-next-card-arrow">→</span>
+</a>

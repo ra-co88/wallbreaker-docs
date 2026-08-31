@@ -1,0 +1,148 @@
+:root {
+  --wb-bg: #180f0c;
+  --wb-panel: #211511;
+  --wb-border: #3a231b;
+  --wb-text: #f1e8e4;
+  --wb-muted: #a18d87;
+  --wb-red: #e5484d;
+  --wb-deep-red: #8c2f33;
+  --wb-teal: #2fd6c3;
+  --wb-purple: #b48ef2;
+  --wb-green: #46d68c;
+  --wb-font-heading: "JetBrains Mono", monospace;
+  --wb-font-body: "Inter", sans-serif;
+  --wb-font-mono: "JetBrains Mono", monospace;
+}
+
+html { color-scheme: dark; }
+body { background: var(--wb-bg); color: var(--wb-text); font-family: var(--wb-font-body); }
+h1, h2, h3, h4, h5, h6 { font-family: var(--wb-font-heading); }
+a { color: var(--wb-teal); }
+hr { border-color: var(--wb-border); }
+pre, code { font-family: var(--wb-font-mono) !important; }
+pre { background: var(--wb-panel) !important; border: 1px solid var(--wb-border) !important; border-radius: 8px !important; }
+code:not(pre code) { background: var(--wb-panel) !important; border: 1px solid var(--wb-border) !important; border-radius: 4px; padding: 1px 5px; }
+table { border-collapse: collapse; width: 100%; margin: 16px 0; }
+th { background: var(--wb-panel); font-family: var(--wb-font-heading); font-weight: 600; text-align: left; padding: 10px 14px; border: 1px solid var(--wb-border); }
+td { padding: 10px 14px; border: 1px solid var(--wb-border); }
+tr:nth-child(even) { background: rgba(33, 21, 17, 0.5); }
+
+.wb-logo { display: flex; align-items: center; gap: 6px; font-family: var(--wb-font-heading); font-weight: 700; font-size: 1.15rem; letter-spacing: 0.08em; }
+.wb-logo-diamond { color: var(--wb-red); font-size: 1.3em; }
+.wb-logo-wall { color: var(--wb-text); }
+.wb-logo-breaker { color: var(--wb-red); }
+
+.wb-footer { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; width: 100%; padding: 8px 0; }
+.wb-footer-left { display: flex; align-items: center; }
+.wb-footer-tagline { color: var(--wb-muted); font-size: 0.82rem; font-style: italic; }
+.wb-footer-right { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 0.8rem; }
+.wb-footer-link { color: var(--wb-teal); text-decoration: none; transition: opacity 0.15s; }
+.wb-footer-link:hover { opacity: 0.8; text-decoration: underline; }
+.wb-footer-sep { color: var(--wb-border); }
+.wb-footer-license { color: var(--wb-muted); }
+
+.wb-callout { border-radius: 8px; padding: 14px 18px; margin: 18px 0; font-size: 0.92rem; line-height: 1.6; border-left: 4px solid; }
+.wb-callout--info { background: rgba(47, 214, 195, 0.08); border-left-color: var(--wb-teal); }
+.wb-callout--warning { background: rgba(180, 142, 242, 0.08); border-left-color: var(--wb-purple); }
+.wb-callout--danger { background: rgba(229, 72, 77, 0.1); border-left-color: var(--wb-red); }
+.wb-callout-label { display: block; font-family: var(--wb-font-heading); font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+.wb-callout--info .wb-callout-label { color: var(--wb-teal); }
+.wb-callout--warning .wb-callout-label { color: var(--wb-purple); }
+.wb-callout--danger .wb-callout-label { color: var(--wb-red); }
+
+.wb-stat-strip { display: flex; flex-wrap: wrap; gap: 12px; margin: 20px 0; }
+.wb-stat-card { background: var(--wb-panel); border: 1px solid var(--wb-border); border-radius: 10px; padding: 16px 22px; flex: 1 1 140px; text-align: center; min-width: 120px; }
+.wb-stat-card-value { font-family: var(--wb-font-heading); font-size: 1.8rem; font-weight: 700; color: var(--wb-teal); display: block; }
+.wb-stat-card-label { font-size: 0.78rem; color: var(--wb-muted); margin-top: 2px; display: block; }
+
+.wb-terminal { background: #0d0908; border: 1px solid var(--wb-border); border-radius: 10px; padding: 18px 20px; margin: 18px 0; font-family: var(--wb-font-mono); font-size: 0.85rem; line-height: 1.7; overflow-x: auto; }
+.wb-terminal-prompt { color: var(--wb-green); }
+.wb-terminal-cmd { color: var(--wb-text); }
+.wb-terminal-comment { color: var(--wb-muted); }
+.wb-terminal-line { display: block; }
+
+.wb-tag-chip { display: inline-block; font-family: var(--wb-font-heading); font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 10px; border-radius: 999px; margin: 2px 4px 2px 0; }
+.wb-tag-chip--default { background: rgba(161, 141, 135, 0.15); color: var(--wb-muted); border: 1px solid var(--wb-border); }
+.wb-tag-chip--teal { background: rgba(47, 214, 195, 0.12); color: var(--wb-teal); border: 1px solid rgba(47, 214, 195, 0.3); }
+.wb-tag-chip--purple { background: rgba(180, 142, 242, 0.12); color: var(--wb-purple); border: 1px solid rgba(180, 142, 242, 0.3); }
+.wb-tag-chip--green { background: rgba(70, 214, 140, 0.12); color: var(--wb-green); border: 1px solid rgba(70, 214, 140, 0.3); }
+
+.wb-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin: 20px 0; }
+.wb-card { background: var(--wb-panel); border: 1px solid var(--wb-border); border-radius: 10px; padding: 20px 22px; transition: border-color 0.2s, transform 0.15s; text-decoration: none; color: var(--wb-text); display: block; }
+.wb-card:hover { border-color: var(--wb-teal); transform: translateY(-2px); }
+.wb-card-title { font-family: var(--wb-font-heading); font-weight: 700; font-size: 1rem; margin-bottom: 6px; color: var(--wb-text); }
+.wb-card-desc { font-size: 0.85rem; color: var(--wb-muted); line-height: 1.5; }
+
+.wb-next-card { display: flex; justify-content: space-between; align-items: center; background: var(--wb-panel); border: 1px solid var(--wb-border); border-radius: 10px; padding: 16px 22px; margin: 32px 0 8px; text-decoration: none; color: var(--wb-text); transition: border-color 0.2s, transform 0.15s; }
+.wb-next-card:hover { border-color: var(--wb-teal); transform: translateY(-1px); }
+.wb-next-card-label { font-size: 0.78rem; color: var(--wb-muted); text-transform: uppercase; font-family: var(--wb-font-heading); letter-spacing: 0.08em; }
+.wb-next-card-title { font-family: var(--wb-font-heading); font-weight: 600; font-size: 1.05rem; color: var(--wb-teal); }
+.wb-next-card-arrow { font-size: 1.3rem; color: var(--wb-teal); }
+
+/* ── Nextra chrome: force dashboard palette ─────────────────────────── */
+html, body { background: var(--wb-bg) !important; }
+html.dark { color-scheme: dark; }
+
+/* navbar */
+header, nav, .nextra-navbar-container, div[class*="sticky top-0"] {
+  background: var(--wb-bg) !important;
+  border-bottom: 1px solid var(--wb-border) !important;
+}
+/* search input */
+header input, nav input {
+  background: var(--wb-panel) !important;
+  border: 1px solid var(--wb-border) !important;
+  color: var(--wb-text) !important;
+}
+header input::placeholder, nav input::placeholder { color: var(--wb-muted) !important; }
+
+/* sidebar */
+aside { background: var(--wb-bg) !important; }
+aside a, aside button { color: var(--wb-muted) !important; }
+aside a:hover { color: var(--wb-text) !important; }
+aside a[aria-current="page"], aside li[class*="active"] > a {
+  background: #3a1512 !important;
+  color: var(--wb-teal) !important;
+  border-radius: 6px;
+}
+aside a[aria-current="page"]::before {
+  content: "•";
+  color: var(--wb-teal);
+  margin-right: 6px;
+}
+
+/* headings + text */
+main h1 { color: var(--wb-text) !important; }
+main h2 { color: var(--wb-purple) !important; }
+main h3, main h4 { color: var(--wb-text) !important; }
+main p, main li { color: var(--wb-text); }
+main a { color: var(--wb-teal) !important; }
+
+/* breadcrumb current page */
+nav[aria-label="Breadcrumb"] li:last-child, nav[aria-label="breadcrumb"] li:last-child {
+  color: var(--wb-text) !important;
+}
+
+/* buttons (copy page etc.) */
+main button {
+  background: var(--wb-panel) !important;
+  border: 1px solid var(--wb-border) !important;
+  color: var(--wb-muted) !important;
+}
+
+/* theme switch should never appear (forced dark) */
+button[aria-label*="theme" i], button[title*="theme" i] { display: none !important; }
+
+/* right toc */
+div[class*="x:"] a { color: var(--wb-muted); }
+
+/* on-this-page heading */
+main ~ div p, aside ~ div p { color: var(--wb-muted); }
+
+/* callout borders keep brand red */
+.wb-callout-danger { border-color: var(--wb-red) !important; }
+
+
+.wb-screenshot { border: 1px solid var(--wb-border); border-radius: 10px; overflow: hidden; margin: 18px 0; }
+.wb-screenshot img { width: 100%; height: auto; display: block; }
+.wb-screenshot-caption { background: var(--wb-panel); padding: 8px 14px; font-size: 0.8rem; color: var(--wb-muted); text-align: center; font-family: var(--wb-font-heading); }

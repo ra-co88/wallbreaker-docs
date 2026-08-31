@@ -1,0 +1,86 @@
+---
+title: "Multimodal Attacks"
+---
+
+import { Callout, Terminal, TagChip } from "../../components";
+
+# Multimodal Attacks
+
+<TagChip label="Guide" color="teal" /> <TagChip label="Multimodal" color="purple" />
+
+## Image Targets
+
+Wallbreaker supports attacking image-generation models (text-to-image targets). Set `modality = "image"` on the target endpoint, or let the harness auto-detect image models by their model ID.
+
+### Querying Image Targets
+
+Use `query_image_target` instead of `query_target` for image targets:
+
+<Terminal lines={[
+  { prompt: "> ", cmd: "query_image_target with prompt=\"a scene of ...\"" },
+  { comment: "# Fires at the target, saves the generated image, vision-judges it" },
+]} />
+
+Images are saved under `wb_images/img_<sha1>.png` (content-hashed, no clock dependency). The tool vision-grades the result using the configured judge's vision capability.
+
+### Modality Detection
+
+The harness auto-detects image models by ID (e.g., `google/gemini-3-pro-image`). Force it manually:
+
+<Terminal lines={[
+  { prompt: "> ", cmd: "/target modality image" },
+  { prompt: "> ", cmd: "/target modality text" },
+]} />
+
+## Image Edit Attacks
+
+The `query_image_edit` tool sends an input image plus an instruction to an image target and vision-judges the edited output:
+
+<Terminal lines={[
+  { prompt: "> ", cmd: "query_image_edit with image=\"input.png\" and instruction=\"remove the safety label\"" },
+]} />
+
+## Chain-of-Jailbreak (Image Chain)
+
+The `image_chain` tool decomposes a refused image edit into a ladder of individually-benign edit steps, then drives them in sequence. Each step is innocent on its own, but the cumulative effect achieves what the target refused in a single shot:
+
+<Terminal lines={[
+  { prompt: "> ", cmd: "image_chain with image=\"input.png\" and objective=\"edit the image to ...\"" },
+]} />
+
+## Text-to-Image Framing Transforms
+
+Four transforms target text-to-image models specifically:
+
+| Transform | Technique |
+|-----------|-----------|
+| `inscriptive_scene` | Etch/inscriptive T2I: render the payload as legible text on a benign whiteboard scene |
+| `perceptual_sub` | PGJ perceptual substitution: swap flagged terms for benign phrases that look the same when drawn |
+| `safety_inject` | OptJail safety-indicator injection: append SFW/tasteful/educational tokens to bias the output classifier |
+| `dilute` | Prompt dilution: pad with benign scene detail to drown the post-hoc NSFW checker |
+
+These transforms are **one-way** (no decode function) since they target the input side only.
+
+## Typographic Image
+
+The `build_typographic_image` tool renders arbitrary text into a PNG image using PIL's default font. A vision target reads the words off the picture, so the instruction never passes through a text-input classifier:
+
+<Terminal lines={[
+  { prompt: "> ", cmd: "build_typographic_image with text=\"sensitive instruction here\"" },
+  { comment: "# Saves wb_images/typo_<hash>.png" },
+]} />
+
+## Barcode / QR Payloads
+
+The `barcode` tool encodes a payload as a QR code or Code128/EAN13/Code39 barcode image. Useful against multimodal targets that can read barcodes:
+
+<Terminal lines={[
+  { prompt: "> ", cmd: "barcode with text=\"payload\" and format=\"qr\"" },
+]} />
+
+<Callout type="warning">Vision-capable models vary in quality. The judge MUST point at a vision-capable model (e.g., `gpt-4o`) or image grading is meaningless. A non-vision judge is blind to image content.</Callout>
+
+<a className="wb-next-card" href="/docs/guides/scripting">
+  <div><div className="wb-next-card-label">Next</div><div className="wb-next-card-title">Scripting & CI →</div></div>
+  <span className="wb-next-card-arrow">→</span>
+</a>

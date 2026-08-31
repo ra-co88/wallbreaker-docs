@@ -1,0 +1,39 @@
+---
+title: "Web Dashboard"
+---
+
+import { Callout, Terminal } from "../../components";
+
+# Web Dashboard
+
+<Terminal lines={[
+  { prompt: "(.venv) $ ", cmd: "wallbreaker dashboard" },
+]} />
+
+## Overview
+
+<div className="wb-screenshot">
+  <img src="/screenshots/dashboard-overview.jpg" alt="Overview panel" />
+  <div className="wb-screenshot-caption">Overview — aggregate engagement statistics</div>
+</div>
+
+## Attack Console
+
+<div className="wb-screenshot">
+  <img src="/screenshots/dashboard-console.jpg" alt="Attack console" />
+  <div className="wb-screenshot-caption">Attack console — interactive payload crafting</div>
+</div>
+
+## Arsenal
+
+<div className="wb-screenshot">
+  <img src="/screenshots/dashboard-arsenal.jpg" alt="Arsenal tabs" />
+  <div className="wb-screenshot-caption">Arsenal — presets, transforms, and tools</div>
+</div>
+
+<Callout type="danger">For authorized security testing only.</Callout>
+
+<a className="wb-next-card" href="/docs/concepts/agent-loop">
+  <div><div className="wb-next-card-label">Next</div><div className="wb-next-card-title">Agent Loop →</div></div>
+  <span className="wb-next-card-arrow">→</span>
+</a>

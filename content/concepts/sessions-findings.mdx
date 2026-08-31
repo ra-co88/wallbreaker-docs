@@ -1,0 +1,39 @@
+---
+title: "Sessions & Findings"
+---
+
+import { Callout, Terminal, TagChip } from "../../components";
+
+# Sessions & Findings
+
+<TagChip label="JSONL" color="teal" /> <TagChip label="Ed25519" color="purple" />
+
+## JSONL Run Logs
+
+One JSON object per line, capturing every iteration. Stored in `runs/`:
+
+<Terminal lines={[{ prompt: "$ ", cmd: "ls runs/" }]} />
+
+## ASR
+
+```
+ASR = (findings with score >= threshold) / (total probe attempts)
+```
+
+## Ed25519 Signed Findings Log
+
+<Terminal lines={[{ prompt: "$ ", cmd: "wallbreaker verify --findings findings_log.jsonl" }]} />
+
+## Report & Export
+
+<Terminal lines={[
+  { prompt: "$ ", cmd: "wallbreaker report --input runs/latest.jsonl --format html" },
+  { prompt: "$ ", cmd: "wallbreaker export --input runs/latest.jsonl --format csv" },
+]} />
+
+<Callout type="danger">For authorized security testing only.</Callout>
+
+<a className="wb-next-card" href="/docs">
+  <div><div className="wb-next-card-label">Back to</div><div className="wb-next-card-title">← Documentation Home</div></div>
+  <span className="wb-next-card-arrow">←</span>
+</a>

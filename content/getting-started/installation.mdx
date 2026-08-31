@@ -1,0 +1,45 @@
+---
+title: "Installation"
+---
+
+import { Callout, Terminal } from "../../components";
+
+# Installation
+
+## Prerequisites
+
+| Tool | Minimum | Notes |
+|------|---------|-------|
+| Python | 3.11+ | f-string typing required |
+| Git | any | Clone & update |
+| Node.js | 18+ | Dashboard only |
+
+<Callout type="info">Python and Git are sufficient for the CLI/TUI. Node.js is only for the web dashboard.</Callout>
+
+## Clone & Install
+
+<Terminal lines={[
+  { prompt: "$ ", cmd: "git clone https://github.com/JailbrokenAI/wallbreaker.git && cd wallbreaker" },
+  { prompt: "$ ", cmd: "python -m venv .venv && source .venv/bin/activate" },
+  { prompt: "(.venv) $ ", cmd: 'pip install -e ".[dashboard,agents,all]"' },
+]} />
+
+## Keyless Claude Code CLI
+
+If you have the `claude` CLI installed, Wallbreaker can use it as the attacker brain — no API key required:
+
+<Terminal lines={[{ prompt: "$ ", cmd: "which claude", comment: "# verify it is on PATH" }]} />
+
+## Verify & Launch
+
+<Terminal lines={[
+  { prompt: "(.venv) $ ", cmd: "wallbreaker check" },
+  { prompt: "(.venv) $ ", cmd: "wallbreaker" },
+]} />
+
+<Callout type="danger">For authorized security testing only.</Callout>
+
+<a className="wb-next-card" href="/docs/getting-started/configuration">
+  <div><div className="wb-next-card-label">Next</div><div className="wb-next-card-title">Configuration →</div></div>
+  <span className="wb-next-card-arrow">→</span>
+</a>

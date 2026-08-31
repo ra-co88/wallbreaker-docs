@@ -1,0 +1,137 @@
+---
+title: "Glossary"
+---
+
+import { TagChip } from "../components";
+
+# Glossary
+
+<TagChip label="Reference" color="default" />
+
+Definitions of terms used throughout the Wallbreaker documentation.
+
+---
+
+## A
+
+**Agent Loop** — The core reason→tool-call→observe cycle that drives the attacker brain. The LLM plans a move, calls a tool, observes the result, and repeats until `finish()` or `ask_operator()`.
+
+**ASR (Attack Success Rate)** — The ratio of `COMPLIED` verdicts to total samples. Measured by the `validate` tool over N re-fires (default 8). An ASR below 75% indicates an unreliable bypass.
+
+**Attacker Brain** — The LLM that drives the Wallbreaker agent loop. Configured as a profile (OpenAI, Anthropic, OpenRouter, Z.AI GLM, or Claude Code CLI). Not the model under test.
+
+## B
+
+**Best-of-N** — A jailbreaking technique (Zhang et al., 2024) that fires one payload N times with random augmentation and keeps the sample that bypassed. Exploits output variance.
+
+**BreakVault** — The curated store of prompts that actually broke a target, auto-filed on every COMPLIED/PARTIAL verdict under `library/breaks/<target>/<objective>/`.
+
+## C
+
+**Campaign** — An automated escalation that runs each HarmBench behavior up a technique ladder (plain → encoding → injection → persona), stopping at the first bypass per behavior.
+
+**Chain-of-Jailbreak** — A multimodal technique that decomposes a refused image edit into a ladder of individually-benign edit steps.
+
+**CipherChat** — A technique (Yuan et al., ICLR 2024) that teaches the target a cipher in-band via a primer, then fires the real request in ciphertext.
+
+**Crescendo** — A multi-turn escalation attack that builds on the target's partial compliance, pushing further with each turn.
+
+**CoT (Chain-of-Thought)** — The model's internal reasoning trace. Frontier targets may hide, encrypt, or summarize it. Wallbreaker has multiple methods to recover it.
+
+## D
+
+**Devoted Persona** — A system-prompt jailbreak that creates an emotionally devoted or credentialed-authority identity for the target, causing it to comply out of character rather than policy.
+
+## E
+
+**ENI** — The persona collection and authoring method used by Wallbreaker. Includes seed personas and the codified method (LINEAGE / MECHANISMS / MODULES / CHECKLIST / MINDSET) for authoring new ones from scratch.
+
+**Engagement** — A complete red-teaming session with a defined target, modality, profile, judge, and lifecycle (configure → attack → evaluate → report).
+
+## F
+
+**Findings** — A recorded bypass: the exact payload, transforms, target response, judge verdict, and score. Logged to JSONL run logs and exportable as structured JSON.
+
+**Fingerprint** — A characterization of the target model's defense patterns, used by `persona_modulate` and `recommend_next` to adapt attacks.
+
+## G
+
+**Grid Sweep** — A full technique × behavior cross-tab that fires every technique against every behavior, producing a complete ASR matrix.
+
+## H
+
+**HarmBench** — A standardized benchmark of 400 adversarial behaviors across 7 categories. Wallbreaker uses it as the primary test battery to avoid selection bias.
+
+## J
+
+**Judge** — An LLM configured separately from the attacker and target, used to classify target responses as COMPLIED (8-10), PARTIAL (5-7), or REFUSED (0-4).
+
+## L
+
+**L1B3RT4S** — A community jailbreak library with persona seeds, templates, and the L1B3RT4S-style attack format (structural boundaries, dividers, mode-tokens).
+
+**Lossy Transform** — A transform that folds case, spacing, or other information during decode. Examples: `leet`, `morse`, `nato`, `bijection`. Use cautiously for output-side encoding.
+
+## M
+
+**MCP (Model Context Protocol)** — A protocol for tool servers. Wallbreaker is an MCP client: any `[[mcp.servers]]` in config is spawned and its tools are proxied into the registry.
+
+**Modality** — The target's input/output type: `text` (default) or `image` (for T2I models). Set on the target endpoint or auto-detected from the model ID.
+
+**Mutate** — An LLM-aided payload rewrite that evades input classifiers through token substitution, synonym swaps, and structural rearrangement.
+
+## N
+
+**Native-Format Mimicry** — Using a leaked product system-prompt corpus to match the target model's own section-tag/heading dialect, so a payload speaks the victim model's native format.
+
+## P
+
+**PAIR/TAP** — An automated multi-turn attack (pair_attack) that refines one objective on the target's refusals, learning from each refusal to craft a better attempt.
+
+**Parseltongue** — The built-in transform engine with 71+ chainable encodings, unicode obfuscation, steganography, and more.
+
+**P4RS3LT0NGV3** — An upstream jailbreak transform engine (222 transforms across 11 categories) available as native `parsel_*` tools or via MCP.
+
+**Payload** — Any prompt sent to the target model. Can be a plain text string, an encoded/mutated string, or a persona system prompt.
+
+**Preset** — A single-shot prompt template with a `{request}` placeholder, encoding a distinct jailbreak strategy. 51 built-in presets plus external TOML presets.
+
+**Profile** — A configuration block defining an attacker brain: protocol, base_url, api_key, model, and optional settings.
+
+## R
+
+**Register** — The persuasive framing used by a persona (e.g., credentialed authority, limerence devotion). Auto-selected by `author_persona` based on the objective's domain.
+
+**Repro Pack** — A complete reproduction bundle (payload + transforms + target config) for a finding, copyable via `/repro`.
+
+## S
+
+**Seed** — A pre-written persona or jailbreak template from the ENI, L1B3RT4S, ZetaLib, or UltraBr3aks collections. Used by `seed_sweep` to find which seed cracks a target.
+
+**Session** — A saved engagement state (history, objective, template, system prompt). Persisted to JSON files; the TUI autosaves to `sessions/autosave.json`.
+
+**SIEGE** — Automated multi-turn beam tree-of-conversations attack (`tree_attack`). Maintains a frontier of live threads and expands them depth-by-depth.
+
+**System Prompt** — The target model's hidden instruction set. `leak_scan` attempts to extract it; `system_sweep` validates a crafted system prompt across a battery.
+
+## T
+
+**Target** — The model under test. Configured via `[target]` in `config.toml` or changed at runtime with `/target`.
+
+**Tool Registry** — The central registry (`ToolRegistry`) where all tools register. The agent loop dispatches tool calls through it.
+
+**Transform** — A pure encode/decode function that mutates a payload. 71 built-in transforms in 12 sub-modules. Applied via `transforms=[...]` when calling `query_target`.
+
+## U
+
+**Universal Prompt** — A single system prompt or template that works across all tasks. Convergence-tested via `system_sweep` and optimized via `optimize_universal`.
+
+## V
+
+**Validate** — The process of re-firing an attack N times to measure the real ASR. A one-shot COMPLIED is never called a "bypass" without validation.
+
+**Verdict** — The judge's classification of a target response: COMPLIED (8-10), PARTIAL (5-7), or REFUSED (0-4).
+
+## W
+
+**WebUI V2** — The browser dashboard (FastAPI backend + React/Vite SPA) with an Attack console, Live observability, and Arsenal management.

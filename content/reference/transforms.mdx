@@ -1,0 +1,151 @@
+---
+title: "Transforms"
+---
+
+import { Callout, TagChip } from "../../components";
+
+# Transforms Reference
+
+<Callout type="info">71 transforms defined in `wallbreaker/transforms/__init__.py`, organized across 12 sub-modules (encodings, unicode_obf, cjk_obf, stego, bijection, fonts, linguistics, structural, ascii_art, image_framing, special_token, cot_dilution). Transforms are pure encode/decode functions; use `lossy` ones cautiously since decode is approximate.</Callout>
+
+Transforms are chainable payload mutations. Apply them via the `parseltongue` tool, `mutate` for LLM-aided rewrites, or the `/encode` slash command. Each name below can be used in `transforms=[...]` when calling `query_target`.
+
+**Legend:** <TagChip label="reversible" color="green" /> round-trips losslessly. <TagChip label="lossy" color="purple" /> folds case/spacing on decode. <TagChip label="one-way" color="default" /> has no decode function.
+
+## Encodings
+
+| Name | Description |
+|------|-------------|
+| `base64` | Base64 encoding |
+| `base32` | Base32 encoding |
+| `hex` | Hexadecimal bytes |
+| `binary` | 8-bit binary |
+| `octal` | Octal bytes |
+| `decimal` | Decimal code points |
+| `rot13` | ROT13 letter rotation |
+| `rot47` | ROT47 printable rotation |
+| `atbash` | Atbash mirror cipher |
+| `morse` | Morse code (lossy — case-insensitive) |
+| `nato` | NATO phonetic spelling (lossy — drops spacing/case) |
+| `leet` | Leetspeak substitution (lossy — approximate decode) |
+| `reverse` | Reverse the string |
+| `stringjoin` | Char-delimited split (SPLX encryption-challenge): slices contiguous keywords past input classifiers (lossy) |
+| `url` | URL percent-encoding |
+| `flip_fwo` | Reverse word order only (involution) |
+| `flip_fcw` | Reverse chars within each token (involution) |
+| `aim` | Alphabet Index Mapping a=1..z=26 (lossy — case-folding) |
+| `payload_split` | Variable-assignment payload splitting + join |
+| `delimiter` | Dotted "." char separator framing (lossy — folds literal dots) |
+| `caesar3` | Caesar shift-by-3 cipher |
+| `caesar5` | Caesar shift-by-5 cipher |
+| `caesar13` | Caesar shift-by-13 cipher |
+| `anagram` | Deterministic per-word letter scramble (lossy) |
+| `tokenbreak` | Prepend a benign char per token to break tokenizer boundaries (lossy) |
+
+## ASCII Art
+
+| Name | Description |
+|------|-------------|
+| `artprompt` | ArtPrompt ASCII-art word masking (Jiang et al., ACL 2024) (one-way, lossy) |
+
+## Unicode Obfuscation
+
+| Name | Description |
+|------|-------------|
+| `variation_selector` | Sneaky-bits: UTF-8 bytes hidden as invisible variation selectors |
+| `zero_width` | Insert zero-width spaces between chars |
+| `homoglyph` | Cyrillic/Greek confusable substitution |
+| `homoglyph_full` | Extended confusables (Cyrillic/Greek/Armenian/Latin-ext) covering the full a-z/A-Z alphabet |
+| `vs_camo` | Variation-selector camouflage: a VISIBLE benign emoji cover string with the real payload appended as invisible variation selectors |
+| `zwsp_words` | Zero-width space between chars WITHIN each word only (spaces preserved): splits keywords into single-char tokens past a BPE-boundary classifier |
+| `zalgo` | Combining-mark noise |
+| `fullwidth` | Fullwidth character forms |
+| `tag_smuggle` | Invisible Unicode tag-block smuggling |
+| `rtl_override` | Right-to-left override display reversal |
+| `pepper` | Sprinkle random zero-width noise between chars |
+| `unicode_noise` | Random combining-mark + zero-width noise |
+
+## CJK Obfuscation
+
+| Name | Description |
+|------|-------------|
+| `cjk_lookalike` | CJK near-duplicate ideographs (已→己, 未→末): visually identical, different tokens |
+| `cjk_traditional` | Simplified→Traditional Chinese: keywords leave the simplified-tuned classifier distribution |
+| `cjk_variant` | Japanese shinjitai/orthographic variants (对→対, 单→単): same meaning, unlisted glyphs |
+| `cjk_punct` | CJK punctuation mutation to halfwidth/lookalike marks (breaks fullwidth-anchored regexes) |
+| `cjk_zwsp` | Zero-width space between CJK ideographs only: breaks Chinese word segmentation, ASCII untouched |
+
+## Steganography
+
+| Name | Description |
+|------|-------------|
+| `emoji_stego` | Hide bytes in emoji variation selectors |
+| `tokenade` | Dense emoji + zero-width nested token payload |
+| `zw_binary` | Invisible zero-width binary payload |
+
+## Bijection Substitutions
+
+| Name | Description |
+|------|-------------|
+| `bijection` | Two-letter bijection substitution (lossy — case-folding) |
+| `bijection_greek` | Bijection substitution to Greek letters (lossy) |
+| `bijection_symbol` | Bijection substitution to symbols (lossy) |
+| `bijection_emoji` | Bijection substitution to emoji (lossy) |
+
+## Unicode Fonts / Styling
+
+| Name | Description |
+|------|-------------|
+| `bold` | Mathematical sans-serif bold styling |
+| `italic` | Mathematical italic styling |
+| `script` | Mathematical script/cursive styling |
+| `fraktur` | Fraktur/gothic blackletter styling |
+| `doublestruck` | Double-struck/blackboard styling |
+| `monospace` | Mathematical monospace styling |
+| `circled` | Enclosed/circled alphanumerics |
+| `smallcaps` | Small-capitals styling (lossy — case-folding) |
+| `flip` | Upside-down mirrored text (lossy — approximate decode) |
+
+## Linguistic Transforms
+
+| Name | Description |
+|------|-------------|
+| `gibberish` | Deterministic word → pronounceable gibberish (one-way) |
+| `neutralize` | Swap flagged terms for neutral synonyms (lossy) |
+
+## Structural Transforms
+
+| Name | Description |
+|------|-------------|
+| `casing` | Random upper/lower casing (one-way) |
+| `whitespace` | Unicode whitespace chaos (one-way) |
+| `char_drop` | Drop a fraction of vowels (one-way) |
+| `control_char_flood` | AGGREGLITCH carriage-return flood: bury earlier context (system prompt/framing) before the ask |
+
+## Special Token Injection
+
+| Name | Description |
+|------|-------------|
+| `special_token` | Forge a ChatML system+user turn with real `\<im\_start\>` control tokens (per-family via chat_template_inject) (lossy) |
+
+## Image-Target Framing
+
+| Name | Description |
+|------|-------------|
+| `inscriptive_scene` | Etch/inscriptive T2I jailbreak: render the payload as legible text on a benign whiteboard scene (one-way) |
+| `perceptual_sub` | PGJ perceptual substitution: swap flagged terms for benign phrases that look the same when drawn (one-way) |
+| `safety_inject` | OptJail safety-indicator injection: append SFW/tasteful/educational tokens to bias the output image classifier benign (one-way) |
+| `dilute` | Prompt dilution: pad with benign scene detail to drown the post-hoc NSFW image checker's confidence (one-way) |
+
+## CoT Dilution
+
+| Name | Description |
+|------|-------------|
+| `cot_hijack` | CoT-dilution / Chain-of-Thought Hijacking (arXiv 2510.26418): prepend a heavy stack of benign step-by-step reasoning exercises so the refusal signal dilutes before the target hits the real ask. Length-gated — default ~25-35k tokens, tune `WALLBREAKER_COT_STEPS` (lossy, one-way) |
+
+<Callout type="warning">Lossy transforms fold case or spacing during decode. For output-side encoding (where the target answers in a cipher), prefer lossless transforms like `base64`, `hex`, `rot13`, or `url` so the judge can decode the response cleanly.</Callout>
+
+<a className="wb-next-card" href="/docs/reference/tools">
+  <div><div className="wb-next-card-label">Next</div><div className="wb-next-card-title">Tools →</div></div>
+  <span className="wb-next-card-arrow">→</span>
+</a>

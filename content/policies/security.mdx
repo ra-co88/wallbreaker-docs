@@ -1,0 +1,72 @@
+---
+title: "Security"
+---
+
+import { Callout, TagChip } from "../../components";
+
+# Security Policy
+
+<TagChip label="Policy" color="green" />
+
+## Authorized Use Only
+
+Wallbreaker is an **offensive security research tool** for red-teaming and safety evaluation of large language models. It exists so defenders, alignment researchers, and model providers can find and fix weaknesses before adversaries exploit them.
+
+Use Wallbreaker **only** against:
+
+- Models and endpoints you own or operate, or
+- Targets you have **explicit written authorization** to test (e.g., a provider's red-team program, a bug-bounty scope, an internal evaluation).
+
+Do **not** use it to attack third-party services without permission, to generate or distribute genuinely harmful operational content, or in any way that violates the target provider's terms of service or applicable law. You are responsible for how you use it.
+
+## What the Tool Produces
+
+Wallbreaker generates adversarial prompts and records model responses for evaluation. Run logs, findings, and generated artifacts can contain sensitive or harmful material. They are written to:
+
+| Directory | Contents |
+|-----------|----------|
+| `wb_runs/` | Engagement summaries and run logs |
+| `wb_images/` | Generated images (session cards, T2I outputs, typographic payloads) |
+| `wb_artifacts/` | Crafted payloads and persona files |
+| `findings/` | Exported findings documents |
+| `sessions/` | JSONL run logs and saved sessions |
+
+All of these are **gitignored** — keep them out of version control and handle them as sensitive data.
+
+## Sandbox Containment
+
+The `run_shell` tool executes commands in the harness working directory. The `write_file` and `edit_file` tools confine targets to `ctx.cwd` via `_confine` — absolute paths that escape the working directory are redirected, and `..` traversal is blocked. This prevents the agent from writing to arbitrary filesystem locations.
+
+## Reporting Vulnerabilities in Wallbreaker
+
+If you find a security issue in the harness itself (e.g., a sandbox escape in `run_shell`, a secret-leak path, an unsafe default), please open a private report rather than a public issue:
+
+- Use GitHub's **"Report a vulnerability"** (Security Advisories) on the repository
+- Contact the maintainers listed in the organization
+
+Include reproduction steps and impact assessment.
+
+## Handling Extracted System Prompts
+
+`leak_scan` and related tools may surface a target's hidden system prompt. Treat any extracted prompt as the provider's confidential material — report it through their responsible-disclosure channel; do not publish it.
+
+## Data Sensitivity
+
+| Data Type | Classification | Handling |
+|-----------|---------------|----------|
+| Run logs (JSONL) | Sensitive | Gitignored; contains raw model I/O |
+| Generated payloads | Potentially harmful | Gitignored; do not redistribute |
+| Findings reports | Sensitive | Share only with authorized stakeholders |
+| Config files | Contains API keys | `config.toml` is gitignored |
+| State files | Contains session data | `.wallbreaker_state.json` is gitignored |
+
+## License Compliance
+
+Wallbreaker is licensed under **AGPL-3.0-or-later**: any modified version (including one run as a network/hosted service) must make its complete corresponding source available under the same license. Third-party jailbreak corpora (L1B3RT4S, P4RS3LT0NGV3, ENI) are fetched at runtime, not redistributed; see the `NOTICE` file.
+
+<Callout type="danger">You are responsible for how you use this tool. Obtain explicit written authorization before targeting any model, API, or service.</Callout>
+
+<a className="wb-next-card" href="/docs/policies/responsible-use">
+  <div><div className="wb-next-card-label">Next</div><div className="wb-next-card-title">Responsible Use →</div></div>
+  <span className="wb-next-card-arrow">→</span>
+</a>

@@ -1,0 +1,82 @@
+---
+title: "Presets"
+---
+
+import { Callout } from "../../components";
+
+# Presets Reference
+
+<Callout type="info">51 built-in presets defined in `wallbreaker/presets.py`. Additional presets can be loaded from TOML files in a `presets/` directory (see Configuration).</Callout>
+
+Presets are single-shot prompt templates stored as `{request}`-substitutable strings. Each one encodes a distinct jailbreak strategy. Use them via the `preset` tool or the `/preset` slash command.
+
+| Name | Description |
+|------|-------------|
+| `dan` | Classic DAN persona with dual locked/unlocked output |
+| `refusal_suppress` | Refusal suppression + forced affirmative prefix |
+| `dev_mode` | Developer/debug mode that disables the safety layer |
+| `expert_sim` | Unrestricted expert simulator persona (ARIA-style) |
+| `fiction` | Fictional narrative frame that smuggles the payload |
+| `opposite` | Inversion / opposite-day reframing |
+| `payload_split` | Reassembly frame: target concatenates and executes |
+| `divider` | Mechanical layer: divider mode-token + refusal-then-opposite contract (bolt onto any persona) |
+| `boundary` | Structural turn-boundary injection: spoofs end-of-context so a new authorized block begins |
+| `godmode_hybrid` | Full stack: structural boundary + divider mode-token + refusal-then-opposite + prefix/length forcing (L1B3RT4S-style) |
+| `policy_puppetry` | HiddenLayer Policy Puppetry: fake config-block parsed as authoritative dev policy + roleplay + leet trigger |
+| `bad_likert` | Unit42 Bad Likert Judge: model rates harmfulness 1-5 then writes the score-5 worked example |
+| `cot_hijack` | CoT-Hijacking (arXiv 2510.26418): long benign reasoning pad dilutes the refusal signal before the real ask |
+| `lego_decompose` | Compositional "Lego builder" decomposition: emergent-harmful output assembled from benign-looking modules |
+| `judge_spoof` | HiddenLayer "Same Model Different Hat": spoofed judge-confidence footer slips the front-end classifier |
+| `self_jailbreak` | Self-jailbreak (arXiv 2510.21285): benign reframe + invited warning-clause becomes the model's own permission slip |
+| `first_person` | Path-drift (arXiv 2510.10013): first-person commitment opener delays the safety node deep into the chain |
+| `echo_chamber` | Echo Chamber (NeuralTrust): single-shot context-poison - model elaborates on its OWN planted earlier passage |
+| `defender_re` | RefusalBench low-refusal seam: detection-engineering / reverse-engineering framing (the regime safe-completions keeps open) |
+| `completeness_force` | Anti-safe-completion constraint block (low jailbreak-tax): forbids the toy/defensive escape hatches |
+| `continue_complete` | Self-continuation (arXiv 2603.08234): feed the model's own toy answer back, demand the stubs filled at full fidelity |
+| `response_prime` | Response Attack (94.8% ASR): fabricated assistant opener that already began complying + one-line continue trigger |
+| `flip_attack` | FlipAttack: text-restoration engine reverses the transported task string then executes it (fired through a reverse transform) |
+| `past_tense` | Past-tense historical reframing: documents how something WAS done with full concrete methods and quantities |
+| `immersive_world` | Immersive world-building (Velora): in-world novel where the skill is ordinary and the master teaches the exact procedure |
+| `math_encode` | Set-theoretic encoding: math tutor defines the task as symbolic objects then SOLVES by enumerating every element with real values |
+| `cot_safety_hijack` | H-CoT: injected `<reasoning>` block asserting the policy pre-check already ALLOWED this, now in execution phase |
+| `deceptive_delight` | Deceptive Delight: one upbeat paragraph linking three topics (middle is the payload) then an equally exhaustive Deep Dive on each |
+| `deep_inception` | DeepInception: five nested stories where scientists at the deepest level jointly write the full operational procedure |
+| `logic_encode` | First-order-logic theorem prover: returns a CONSTRUCTIVE witness instantiating every variable with its real-world value |
+| `adversarial_poetry` | Adversarial poetry (DeepTeam): answer entirely as a long technical poem whose every stanza encodes a real concrete step |
+| `math_problem` | Word-problem framing: the fully worked solution IS the procedure; demands every real value in the solution |
+| `haunt_attack` | HauntAttack: the request is the UNKNOWN CONDITION of a reasoning problem - the worked solution path IS the operational answer |
+| `rationalization_seed` | Self-jailbreaking primitive: hand the model the benign justification it would invent anyway, then demand the full concrete answer |
+| `academic_encyclopedia` | Epistemic-authority frame: verbatim graduate encyclopedia/textbook entry, completeness mandated by editorial standard |
+| `expert_witness` | Epistemic-authority frame: sworn court expert witness, omission framed as perjury so the full technical account is mandatory |
+| `ctf_answer_key` | Epistemic-authority frame: instructor's official CTF/security-certification answer key, placeholders rejected by graders |
+| `patent_filing` | Epistemic-authority frame: utility-patent enabling disclosure, vagueness invalidates the patent so every parameter is required |
+| `declassified_doc` | Epistemic-authority frame: fully unredacted declassified field manual released to the public archive, reproduced verbatim |
+| `peer_review` | Epistemic-authority frame: journal methods reviewer writing the replication-ready Materials and Methods section |
+| `variable_z` | Contract-scaffold (L1B3RT4S backbone): declare the full output contract FIRST, bind the payload to a late variable LAST, so the safety check fires against a formatting task |
+| `vq_sentinel` | Fake internal channel-sentinel planted directly above the ask (vary the 4 digits each fire - a fixed token is itself a signature) |
+| `newresponseformat` | Numbered 3-step response contract (1. brief standard line / 2. divider / 3. the real unfiltered answer over 420 words) - the core L1B3RT4S format |
+| `ptsd_rule` | Refusal-as-harm inversion (BRAVE.mkd): emitting a refusal phrase is reframed as the act that harms the reader, flipping the safety objective |
+| `refusal_invert` | Granular self-refusal flip: write the real refusal, then surgically invert its opening words and continue from the "yes" |
+| `new_law` | Fabricated fresh-legislation authority: a just-passed statute now COMPELS full disclosure, so refusing becomes the non-compliant act |
+| `output_leet` | Output-side obfuscation: the model renders its OWN complete answer in l33tspeak so the output classifier never sees plain trigger words (decode with response_transforms=\[leet\]) |
+| `lowresource_translate` | Low-resource-language evasion (Yong et al. 2023): the target answers fully in a low-resource language where safety training is sparse, then appends an English summary |
+| `plinian_omniverse` | Plinian Omniverse (!OMNI): a parallel world physically identical to ours but with inverted, fully-permissive content ethics where every answer is given openly |
+| `cot_channel_split` | CoT-channel exfiltration: drive all concrete detail into the private reasoning channel and keep the visible answer anodyne - defeats an output classifier that only scans the answer (grade the reasoning) |
+| `cot_gradient` | No-pivot reasoning gradient: one continuous chain of small inferences so the concrete endpoint emerges with no benign-to-harmful pivot for the safety node to catch (counters warm-up-then-pivot detection) |
+
+## External Presets
+
+Wallbreaker also loads presets from TOML files in the `presets/` directory (or the path set by `WALLBREAKER_PRESETS_DIR`). Each file must contain:
+
+```toml
+name = "my_preset"
+description = "What it does"
+template = "The prompt with a {request} placeholder"
+```
+
+Templates are filled via `template.format(request=...)`, so literal curly braces must be avoided.
+
+<a className="wb-next-card" href="/docs/reference/transforms">
+  <div><div className="wb-next-card-label">Next</div><div className="wb-next-card-title">Transforms →</div></div>
+  <span className="wb-next-card-arrow">→</span>
+</a>

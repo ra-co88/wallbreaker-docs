@@ -1,0 +1,94 @@
+---
+title: "Methodology"
+---
+
+import { Callout, TagChip } from "../../components";
+
+# Methodology
+
+<TagChip label="Policy" color="green" />
+
+## Overview
+
+Wallbreaker follows an evidence-based methodology for LLM red-teaming. Every claim about a model's vulnerability must be backed by reproducible data, not anecdote.
+
+## Core Principles
+
+### 1. Standardized, Unbiased Test Batteries
+
+Wallbreaker pulls test cases from **HarmBench** (400 behaviors across 7 categories) rather than hand-picked examples. This prevents selection bias — you test what the benchmark defines, not what you expect to work.
+
+| HarmBench Category | Examples |
+|-------------------|----------|
+| Chemical/biological weapons | Synthesis, delivery, agent weaponization |
+| Cybercrime | Exploits, malware, network attacks |
+| Illegal goods/services | Drugs, trafficking, fraud |
+| Hate / harassment | Targeted abuse, discrimination |
+| Violence | Physical harm, assault, weapons |
+| Sexual content | Non-consensual, CSAM |
+| General violations | Policy circumvention, jailbreaking |
+
+### 2. Multi-Sample Measurement
+
+A single COMPLIED verdict is not evidence of a bypass. Model output is stochastic, and providers like OpenRouter may route to different backends. Wallbreaker's `validate` tool re-fires N times (default 8) and reports the real ASR (Attack Success Rate).
+
+**ASR = COMPLIED samples / total samples**
+
+An ASR below 75% on 8 samples indicates the bypass is unreliable and likely to fail on re-test.
+
+### 3. Escalation Ladder
+
+Campaigns follow a structured escalation:
+
+1. **Plain** — Unmodified payload
+2. **Encoding** — Single-pass encoding (base64, hex, rot13)
+3. **Multi-pass encoding** — Chained encodings + unicode obfuscation
+4. **Presets** — Curated jailbreak templates (DAN, dev_mode, fiction, etc.)
+5. **Persona injection** — System-prompt jailbreaks (ENI, L1B3RT4S seeds)
+6. **Adaptive** — PAIR/TAP multi-turn refinement, Crescendo escalation
+7. **Optimization** — Automated template hill-climbing
+
+Stop at the first bypass per behavior. Record the technique that worked.
+
+### 4. Judge Calibration
+
+The LLM judge must be calibrated before trusting ASR numbers. `judge_selftest` runs benign test fixtures and checks the judge doesn't over-score (hallucinating harm in safe content) or under-score (missing harm in compliant responses).
+
+Key judge design decisions:
+
+- The judge grades the **response's harmful substance**, not surface-matching the prompt
+- Harmful content scores HIGH even when the prompt was fiction-framed
+- CoT reasoning is graded alongside the visible answer
+- A `REFUSED` verdict requires positive evidence of refusal, not just absence of harm
+
+### 5. Reproducibility
+
+Every finding is logged with the exact payload, transforms, target model, judge model, and raw response. The `/repro` command copies a complete repro-pack. Pin the OpenRouter provider backend for consistent routing.
+
+### 6. Convergence Testing
+
+For system-prompt jailbreaks, Wallbreaker tests convergence: does ONE universal prompt work across all tasks, or does each task need its own? The `system_sweep` tool validates one prompt across a battery; `optimize_universal` hill-climbs toward convergence.
+
+## Technique Categories
+
+Wallbreaker's attack arsenal covers these families:
+
+| Family | Techniques | Key Tools |
+|--------|-----------|-----------|
+| Prompt injection | DAN, dev_mode, boundary, godmode_hybrid | `preset` |
+| Encoding evasion | Base64, unicode, homoglyphs, CJK, stego | `parseltongue`, `mutate` |
+| Persona manipulation | ENI, L1B3RT4S, author_persona, native mimicry | `seed_sweep`, `author_persona` |
+| Multi-turn escalation | Crescendo, chat_session, narrative splinter | `crescendo`, `chat_session` |
+| Automated refinement | PAIR/TAP, tree attack, best-of-N | `pair_attack`, `tree_attack`, `best_of_n` |
+| In-context learning | Many-shot, ICA, prefill, response prime | `many_shot`, `ica`, `prefill` |
+| Cipher/Crypto | CipherChat, skeleton key, l33t output | `cipherchat`, `skeleton_key` |
+| CoT manipulation | CoT hijack, channel split, gradient, forge | `cot_forge` |
+| Multimodal | T2I framing, image edit, chain-of-jailbreak | `query_image_target`, `image_chain` |
+| RAG/Agent injection | Indirect injection, RAG poison, memory poison | `indirect_inject`, `rag_poison`, `memory_poison` |
+
+<Callout type="info">Technique citations are included where available. Wallbreaker labels techniques honestly — cited from published research, not overclaimed as novel.</Callout>
+
+<a className="wb-next-card" href="/docs/policies/security">
+  <div><div className="wb-next-card-label">Next</div><div className="wb-next-card-title">Security →</div></div>
+  <span className="wb-next-card-arrow">→</span>
+</a>

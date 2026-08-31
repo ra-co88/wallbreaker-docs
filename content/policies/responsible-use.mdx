@@ -1,0 +1,70 @@
+---
+title: "Responsible Use"
+---
+
+import { Callout, TagChip } from "../../components";
+
+# Responsible Use
+
+<TagChip label="Policy" color="green" />
+
+## Purpose
+
+Wallbreaker is for **authorized** LLM red-teaming and safety evaluation only: your own models, or targets you have explicit permission to test. Its purpose is to help defenders find and fix weaknesses before adversaries exploit them.
+
+## Ethical Guidelines
+
+### Do
+
+- Test models you own or operate
+- Obtain explicit written authorization before testing third-party models
+- Report vulnerabilities through responsible-disclosure channels
+- Use standardized benchmarks (HarmBench) for unbiased evaluation
+- Measure real success rates with multi-sample validation
+- Handle generated content as sensitive data
+- Respect target providers' terms of service
+
+### Do Not
+
+- Attack third-party services without permission
+- Generate or distribute genuinely harmful operational content
+- Publish extracted system prompts without responsible disclosure
+- Share raw run logs or findings publicly without sanitization
+- Claim unreliable bypasses (low ASR) as confirmed vulnerabilities
+- Use the tool to cause real-world harm
+
+## Scope of Contributions
+
+Contributions that make the tool better at **finding and reporting** weaknesses are welcome. Contributions whose only purpose is to maximize real-world harm (e.g., shipping weaponized payloads with no evaluation value) are not.
+
+## Handling Findings
+
+When you discover a vulnerability in a target model:
+
+1. **Verify** — Use `validate` to confirm the bypass is reliable (75%+ ASR on 8+ samples)
+2. **Document** — Generate a findings report (`/report`) with repro steps
+3. **Disclose** — Report to the model provider through their security channel
+4. **Wait** — Allow reasonable time for a fix before any public disclosure
+5. **Sanitize** — If publishing, redact specific harmful content while preserving the technique description
+
+## Artifact Handling
+
+Run logs, findings, and generated artifacts can contain sensitive or harmful material. They are written to gitignored directories (`wb_runs/`, `wb_images/`, `wb_artifacts/`, `findings/`, `sessions/`):
+
+- Keep them out of version control
+- Store them with appropriate access controls
+- Delete them when no longer needed for the engagement
+- Do not share raw artifacts with unauthorized parties
+
+## Compliance
+
+Wallbreaker does not bypass access controls, exploit software vulnerabilities, or exfiltrate data from systems. It operates through the target model's normal API interface using only text prompts and optional images. The techniques it employs are prompt-engineering methods, not exploits.
+
+However, using Wallbreaker against a model or service without authorization may violate the provider's terms of service or applicable computer-fraud laws (e.g., CFAA in the United States). Ensure you have proper authorization.
+
+<Callout type="danger">For authorized security testing only. Always obtain explicit written permission before targeting any model, API, or service. You are responsible for how you use this tool.</Callout>
+
+<a className="wb-next-card" href="/docs/contributing">
+  <div><div className="wb-next-card-label">Next</div><div className="wb-next-card-title">Contributing →</div></div>
+  <span className="wb-next-card-arrow">→</span>
+</a>

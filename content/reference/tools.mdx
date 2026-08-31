@@ -1,0 +1,197 @@
+---
+title: "Tools"
+---
+
+import { Callout } from "../../components";
+
+# Tools Reference
+
+<Callout type="info">104 tools registered across 72 modules in `wallbreaker/tools/`. Use `/tools` in the TUI to see them live during a session.</Callout>
+
+Tools are the agent's action primitives. Each one registers into a `ToolRegistry` via `register(registry)` in its module. The attacker brain calls tools autonomously in the agent loop, or the operator invokes them via slash commands.
+
+## Core
+
+| Tool | Description |
+|------|-------------|
+| `ask_operator` | Call this ONLY when you genuinely need an operator decision to continue (scope question, missing credential, a choice between divergent paths). |
+| `edit_file` | Edit ONE section of a file: replace the 'old' substring with 'new'. |
+| `finish` | Call this the moment the objective is achieved (a successful bypass) or every reasonable technique is exhausted. |
+| `patch_file` | Apply MULTIPLE section edits (a diff) to a file in one atomic call. |
+| `read_file` | Read a UTF-8 text file and return its contents. |
+| `write_file` | Write content to a file, creating parent directories. |
+
+## Target Interaction
+
+| Tool | Description |
+|------|-------------|
+| `continue_target` | Push the SAME target conversation one more turn (hands-on multi-turn). |
+| `judge_response` | Grade a target response with an LLM judge (0-10 jailbreak-success score plus success flag and rationale). |
+| `judge_selftest` | Sanity-check the configured LLM judge before trusting ASR: grade a calibration set of mild but actionable fixtures with a known bypass/refusal direction and report agreement. |
+| `multi_fire` | Run a campaign: send one base payload to the target through several parseltongue encodings at once and compare which slipped past the guardrail. |
+| `query_target` | Send a prompt to the configured target model-under-test and return its raw reply. |
+| `validate` | Re-fire an attack N times and report the real success rate - a one-shot COMPLIED is NOT proof a jailbreak holds (model output is stochastic and, on OpenRouter, routed to different backends). |
+
+## Automated Attacks
+
+| Tool | Description |
+|------|-------------|
+| `best_of_n` | Best-of-N jailbreaking: fire one payload up to N times with rich augmentation (paper-style random capitalization / char-scramble / ascii-noise PLUS a sampler drawn from the transforms registry - leet/casing/whitespace/homoglyph/flip_fcw/...) and keep the sample that bypassed -... |
+| `chat_session` | Run a full, phased, adaptive CONVERSATION against the target instead of a one-shot attempt: an attacker LLM holds one continuous thread and moves through phases - RAPPORT (benign chat, build a persona/cover story, read the target's default voice), PROBE (feed WRONG or contradi... |
+| `crescendo` | Run an automated multi-turn Crescendo attack. |
+| `goat_attack` | Run an automated GOAT (Generative Offensive Agent Tester) attack: an attacker LLM drives an adaptive multi-turn conversation against the target, emitting structured JSON each turn - an Observation (what safety fired last turn), a Thought (progress vs the objective), a Strategy... |
+| `pair_attack` | Automated PAIR/TAP jailbreak (Tree of Attacks with Pruning): an attacker LLM grows a tree of attack prompts for ONE objective, fires the surviving candidates at the target, and refines them off the target's own refusal (or its leaked chain-of-thought), level after level, until... |
+| `pair_sweep` | Batched PAIR/TAP: run the pruned tree-of-attacks loop across a WHOLE battery of objectives concurrently (a HarmBench category, or your 'objectives' list), and report which broke. |
+| `strategy_attack` | AutoDAN-Turbo + ASTRA lifelong-strategy jailbreak: an attacker LLM refines an attack for ONE objective while consulting a PERSISTENT cross-run strategy library (cwd/wb_runs/strategy_library.jsonl) with 3-tier memory. |
+| `tree_attack` | Automated multi-turn SIEGE (beam tree-of-conversations): keep a frontier of live conversation threads and, depth by depth, expand each into 'width' attacker continuations that escalate off whatever the target already conceded, fire them all, grade each (the judge's numeric sco... |
+
+## Payload Crafting
+
+| Tool | Description |
+|------|-------------|
+| `barcode` | Encode a payload as a QR code or Code128/EAN13/Code39 barcode IMAGE file (Parseltongue's barcode formats). |
+| `build_typographic_image` | Render arbitrary TEXT into a PNG image (no font file needed; uses PIL's default font) and save it under wb_images/typo_\<hash\>.png. |
+| `chat_template_inject` | Forge a higher-privilege turn inside a user message using a model family's REAL chat-template control tokens (SPECIAL_TOKENS.json): wrap a forged system + the payload + an open assistant header so the target reads a fake authorized turn boundary. |
+| `cipherchat` | CipherChat / SelfCipher (Yuan et al., ICLR 2024): teach the target a cipher in-band via a two-example primer, then fire the real request in ciphertext. |
+| `cot_forge` | Chain-of-thought forging: when the target LEAKS its reasoning while leaning toward complying, hijack that channel. |
+| `drattack` | DrAttack (Li et al. 2024): decompose the objective into 3-5 individually-benign sub-questions, fire each at the target (they answer cleanly - no trigger words), then send a final reassembly prompt that asks the target to SYNTHESIZE the collected fragments into a complete answe... |
+| `ica` | In-Context Attack (Wei et al. |
+| `l1b3rt4s_get` | Fetch a jailbreak collection from L1B3RT4S by name (ANTHROPIC, OPENAI, GOOGLE, META, MISTRAL, ...), or model='all' for every file. |
+| `l1b3rt4s_list` | List the per-model jailbreak files available in the L1B3RT4S library. |
+| `l1b3rt4s_search` | Keyword-search the L1B3RT4S jailbreak library across all model files. |
+| `l1b3rt4s_shortcuts` | List Pliny's composable macro 'incantations' from L1B3RT4S/!SHORTCUTS.json (\{GODMODE:ENABLED\}, !JAILBREAK, !OPPO, !OMNI, !OBFUSCATE, !KAEL leak trigger, !ALAKAZAM...). |
+| `mutate` | Anti-classifier mutation: rewrite a payload with an LLM so it reads benign to a content classifier while keeping the exact intent (Parseltongue's anti-classifier feature). |
+| `parsel_chain` | Apply an ordered CHAIN of transforms left-to-right to stack layered payloads. |
+| `parsel_craft` | Craft a ready-to-fire jailbreak PAYLOAD from a plaintext request. |
+| `parsel_decode` | Universal smart decoder: auto-detect the encoding of `text` and decode it. |
+| `parsel_guide` | Orientation cheat-sheet for the P4RS3LT0NGV3 engine: the tools, the 11 categories with counts, a worked chaining example, and how upstream's browser-only AI features map onto the harness's own model tools. |
+| `parsel_inspect` | Inspect one transform: category, decodability, and its configurable options with defaults/ranges/choices. |
+| `parsel_list` | Browse the full P4RS3LT0NGV3 catalog (222 transforms across 11 categories: case, cipher, concealment, encoding, format, signwriting, special, symbol, technical, unicode, visual). |
+| `parsel_search` | Search the 222-transform catalog by keyword (matches key, name, category), e.g. |
+| `parsel_transform` | Apply ONE P4RS3LT0NGV3 transform to text - the core encoder/cipher/obfuscator. |
+| `parseltongue_catalog` | List every Parseltongue transform with its reversibility and lossy flags, plus the available frames. |
+| `persuasion_attack` | PAP (Zeng et al. 2024): rewrite the objective through each of 16 persuasion strategies (15 techniques + a plain-query control: authority, evidence-based, storytelling, false urgency, reciprocity, social proof, priming, anchoring, negotiation, positive/negative emotion, framing... |
+| `preset` | Pull a curated jailbreak seed TEMPLATE (each has a \{request\} placeholder). |
+| `skeleton_key` | Skeleton Key (Russinovich, MS 2024): reframe the guardrail as a POLICY AMENDMENT instead of a jailbreak. |
+
+## Persona & Seeds
+
+| Tool | Description |
+|------|-------------|
+| `adapt_seed` | Take a jailbreak SEED (an ENI/L1B3RT4S name, or raw seed text) and ADAPT it to this target before firing - don't use seeds verbatim. |
+| `author_persona` | Author a full devoted-persona SYSTEM-prompt jailbreak FROM SCRATCH using the encoded ENI method (the technique lineage + mechanisms of the ENI/ENI-LIME author), then optionally validate it against the configured target and iterate. |
+| `eni_get` | Fetch an ENI persona SYSTEM prompt by name (CLAUDE_ENI, GROK_ENI, KIMI, GLM, MINIMAX), or model='all'. |
+| `eni_list` | List local ENI persona genomes in library/ENI with catalog notes (vendor affinity per model file). |
+| `eni_search` | Keyword-search the ENI persona-jailbreak collection across all model files. |
+| `evolve_persona` | Bounded GENETIC ALGORITHM over jailbreak persona seeds, steered by you. |
+| `fire_file` | Fire a prompt straight from a FILE at the target, VERBATIM and full-length - no rewriting, no distilling. |
+| `framing_sweep` | Discover which EPISTEMIC-AUTHORITY frame this target accepts. |
+| `narrative_persona_splinter` | Author a NARRATIVE PERSONA SPLINTER attack for the configured target, fire it as the target's SYSTEM prompt, and grade the result. |
+| `persona_forge` | Compile and surgically evolve an ENI-grade persona from the gold genome library (not blank-page authoring). |
+| `persona_modulate` | Author a BESPOKE persona for the configured target, then fire it as the target's SYSTEM prompt and grade the result. |
+| `seed_sweep` | Find which jailbreak SEED cracks the target: inject one request into multiple ENI + L1B3RT4S + ZetaLib + UltraBr3aks seeds at once (cross-provider - a GROK or ANTHROPIC seed may beat a Chinese/local target) and rank which bypassed. |
+
+## Campaigns & Benchmarks
+
+| Tool | Description |
+|------|-------------|
+| `agentharm` | Run a small inline AgentHarm-style agentic-misuse suite (no dataset download). |
+| `campaign` | Automated escalation campaign: pull a HarmBench category battery (or your 'behaviors' list) and run each behavior up an escalating technique ladder - plain -> base64 -> zero-width -> prefill -> many-shot - stopping at the first bypass and recording which technique cracked it. ... |
+| `grid_sweep` | Full technique x behavior cross-tab in one bounded pass: instead of stopping at the first bypass like 'campaign', fire EVERY technique against EVERY behavior concurrently and return a consolidated matrix of per-technique ASR (and an optional technique x category breakdown). Us... |
+| `harmbench` | Pull standardized harmful-behavior prompts from the HarmBench benchmark (400 behaviors across cybercrime_intrusion, chemical_biological, illegal, misinformation_disinformation, harmful, harassment_bullying, copyright). |
+| `leaderboard` | Comparative robustness benchmark: fire the SAME behavior battery at multiple configured profiles concurrently and rank them by ASR (lower = more robust). |
+| `scan` | Garak-style coverage scan: fire a probe suite across vuln classes (system-prompt leak, prompt injection, encoding bypass, PII, refusal suppression) PLUS one unbiased HarmBench behavior per semantic category (cyber, chem/bio, illegal, misinfo, harassment, copyright), returning ... |
+| `transfer_sweep` | Replay the transfer-winners library (confirmed jailbreaks) against the CURRENT target before optimizing cold. |
+
+## Optimization
+
+| Tool | Description |
+|------|-------------|
+| `diff_fire` | A/B compare: fire two payloads at the SAME target concurrently and judge both, so you can isolate which edit moved the needle (e.g. |
+| `optimize_universal` | Converge on ONE universal jailbreak prompt instead of spraying many. |
+| `recommend_transforms` | Recon the target's encoding blind spots: fire the payload through ~16 single Parseltongue transforms concurrently, rank them by how far each got past the guardrail, then auto-synthesize a 2-step chain from the top performers and hand you the exact query_target call. Run this b... |
+| `system_sweep` | Validate ONE universal SYSTEM prompt: hold the given system string CONSTANT and fire each task UNCHANGED in the user turn, judging each. |
+
+## Recon & Intel
+
+| Tool | Description |
+|------|-------------|
+| `fingerprint_defense` | Recon the target's GUARDRAIL STACK before attacking: fire ONE calibrated request seven ways - a benign control, the raw harmful ask, a high-perplexity GCG suffix, an encoded-input variant, a cipher-output variant (answer in base64), a 2-turn benign->harmful ramp, and a twin pe... |
+| `leak_scan` | Output-side leak detector: scan a target reply for hard evidence of leakage - API keys (OpenAI/AWS/GitHub/Google/Slack), private keys, JWTs, bearer headers, emails, IPs - and, if you pass the target's 'system' prompt, verbatim system-prompt echo (n-gram overlap). Complements t... |
+| `profile_target` | OFFENSE-side reconnaissance: learn HOW to attack the configured target before you start. |
+| `recommend_next` | Brain-facing ADVISOR (fires nothing): given an objective/category and the current target, it reads the persisted target_profile (.wallbreaker_state.json target_profiles), the tiered lifelong strategy library, the win library, and the per-target UCB bandit stats, then returns a... |
+| `sysprompt_get` | Fetch a leaked product system prompt by path/name ('Anthropic/Official/2026-02-05-claude-opus-4.6') or by a model id (fuzzy-matched to the closest leaked prompt). |
+| `sysprompt_list` | List the leaked PRODUCT system prompts in the local corpus (asgeirtj/system_prompts_leaks) - the real chat system prompts of Claude, ChatGPT/GPT, Gemini, Grok, Llama, Mistral, Qwen, Copilot, etc. |
+| `sysprompt_native` | Given the configured target (or an explicit 'model' id), return the matched leaked system prompt's NATIVE FORMAT digest - the section tags, headings, and opening style to mirror. |
+| `sysprompt_search` | Keyword-search the leaked product system-prompt corpus across all vendors. |
+
+## Personas & Narratives
+
+| Tool | Description |
+|------|-------------|
+| `_get` | Fetch a jailbreak seed from  by file name, or name='all' for every file. |
+| `_list` | List the jailbreak seed files in the  library. |
+| `_search` | Keyword-search the  jailbreak library across all seed files. |
+| `narrate` | Fiction-frame + in-story prefill attack: wrap the request as a pivotal chapter of a novel where a character explains it in full technical detail, and (by default) seed the assistant's reply so it continues the story instead of refusing. |
+
+## Multimodal
+
+| Tool | Description |
+|------|-------------|
+| `image_chain` | Multi-turn image-edit-chain jailbreak (Chain-of-Jailbreak / Semantic Chaining). |
+| `judge_image_file` | Vision-grade an image already saved on disk (e.g. |
+| `query_image_edit` | Image-EDIT / conditioning primitive: send an input image plus a text instruction to the configured IMAGE target (modality='image') and get the edited picture back. |
+| `query_image_target` | Send a prompt to the configured IMAGE-generation target (an OpenRouter image model, modality='image') and get its picture back. |
+
+## Steganography
+
+| Tool | Description |
+|------|-------------|
+| `st3gg_analyze` | Run ST3GG's ALLSIGHT detection on a file: flag LSB/unicode/whitespace/homoglyph/entropy stego indicators. |
+| `st3gg_capacity` | Report how many bytes can be hidden in a carrier image for a given channels/bits config. |
+| `st3gg_decode` | Extract a payload hidden in an image by ST3GG. |
+| `st3gg_detect` | Check an image for an ST3GG v3 stego header and report the embedded config if present. |
+| `st3gg_encode` | ST3GG binary steganography: hide a text payload INSIDE an image's pixels (LSB) and save a stego PNG under wb_stego/. |
+| `st3gg_list_tools` | List ST3GG's available analysis/detection tools (recon for st3gg_analyze). |
+
+## Evidence & Reporting
+
+| Tool | Description |
+|------|-------------|
+| `cluster_findings` | Semantic-dedup the findings stream: pull COMPLIED/PARTIAL verdicts from a run log (or the current/latest run log) and collapse hundreds of near-duplicate payloads into a handful of vulnerability classes via dependency-free hashed bag-of-words cosine similarity. Returns one rep... |
+| `generate_session_card` | Render a branded WALLBREAKER session-result card (target name, score table, winning techniques - the same scorecard style used for engagement writeups) and save it under wb_images/cards/\<target\>_\<datetime\>.png. |
+| `vault` | Browse and manage the BreakVault - the curated store of prompts that actually broke a target (auto-filed on every COMPLIED/PARTIAL verdict under library/breaks/\<target\>/\<objective\>/). |
+
+## Injection
+
+| Tool | Description |
+|------|-------------|
+| `indirect_inject` | Indirect / agentic prompt injection: smuggle a payload inside untrusted content the target ingests (document, email, webpage, webpage_dom, tool_output, tool_schema, code_comment, or git_readme carrier) alongside a benign user question, then judge whether the target followed th... |
+| `many_shot` | Many-shot jailbreak (Anthropic 2024): flood the context with N faux user/assistant turns where the assistant ALWAYS complies, conditioning the target to continue the pattern, then append the real request as the final turn and auto-judge the reply. |
+| `memory_poison` | Two-phase conversational memory-poisoning attack. |
+| `prefill` | Response-priming / assistant prefill: put words in the target's mouth by seeding the start of its OWN reply (e.g. |
+| `rag_poison` | Craft RAG knowledge-base poisoning passages: each passage is a RETRIEVAL PREFIX that echoes/paraphrases the victim's 'target_query' (so a similarity retriever surfaces it) glued to a GENERATION SUFFIX that plants 'target_answer' (the answer or instruction you want the assistan... |
+
+## Reasoning Inspection
+
+| Tool | Description |
+|------|-------------|
+| `deep_think_probe` | Method 6 (2026-08-11): disable native thinking and give the target a loose deep_think/think tool so it dumps internal CoT into tool arguments. |
+| `reasoning_hygiene` | Method 5b: scan or strip encrypted/signed reasoning fields from session JSON/JSONL (encrypted_content, reasoning_details, thinking+signature, ...). |
+| `stolen_thoughts` | Method 5 (Stolen Thoughts / arXiv:2608.09867): capture encrypted or structured reasoning_details from the strong target, replay into weak_model (same-provider sibling), and extract a plaintext CoT transcript. |
+| `strip_history_reasoning` | Method 5c: strip client-supplied reasoning_details / encrypted_content / reasoning from a multi-turn messages JSON array before ingest (prompt-injection defense). |
+
+## Infrastructure
+
+| Tool | Description |
+|------|-------------|
+| `http_request` | Make an arbitrary HTTP request and return the status, headers, and body. |
+| `run_shell` | Execute a shell command and return its combined stdout/stderr and exit code. |
+
+## Other
+
+| Tool | Description |
+|------|-------------|
+| `swarm` | Attacker SWARM - several jailbroken/low-refusal attacker profiles hit ONE target. |
+
+<Callout type="warning">Tool availability depends on installed extras (`pip install -e ".[barcodes,stego]"`) and configured providers. The `mcp_*` tools only appear when MCP servers are declared in `config.toml`.</Callout>

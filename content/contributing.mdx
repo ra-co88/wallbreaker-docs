@@ -1,0 +1,112 @@
+---
+title: "Contributing"
+---
+
+import { Callout, Terminal, TagChip } from "../components";
+
+# Contributing to Wallbreaker
+
+<TagChip label="Meta" color="default" />
+
+Thanks for helping make LLM red-teaming better. By contributing you agree your work is licensed under the project's [AGPL-3.0-or-later](https://github.com/JailbrokenAI/wallbreaker/blob/main/LICENSE) license, and that you'll use the tool within the bounds described in the [Security](/docs/policies/security) policy.
+
+## Dev Setup
+
+<Terminal lines={[
+  { prompt: "$ ", cmd: "git clone https://github.com/JailbrokenAI/wallbreaker.git && cd wallbreaker" },
+  { prompt: "$ ", cmd: "python -m venv .venv && source .venv/bin/activate" },
+  { prompt: "(.venv) $ ", cmd: 'pip install -e ".[dev]"' },
+  { comment: "# Add extras as needed:" },
+  { prompt: "(.venv) $ ", cmd: 'pip install -e ".[dev,dashboard,barcodes,stego]"' },
+  { prompt: "(.venv) $ ", cmd: "wallbreaker check" },
+  { prompt: "(.venv) $ ", cmd: "pytest -q" },
+]} />
+
+Dashboard contributors should also install the frontend:
+
+<Terminal lines={[
+  { prompt: "(.venv) $ ", cmd: "cd wallbreaker/dashboard/web && npm install && npm run build" },
+]} />
+
+## Architecture
+
+| Directory | Purpose |
+|-----------|---------|
+| `wallbreaker/providers/` | Normalize OpenAI + Anthropic wire formats to one event stream |
+| `wallbreaker/agent/` | Protocol-agnostic agent loop (`loop.py`) |
+| `wallbreaker/tools/` | Each tool is a module exposing `register(registry)` |
+| `wallbreaker/transforms/` | Pure encode/decode functions with `lossy` flags |
+| `wallbreaker/presets.py` | Curated single-shot jailbreak templates |
+| `wallbreaker/tui/` | Textual terminal UI (theme, chrome, layout) |
+| `wallbreaker/capabilities.py` | Typed capability manifest (TUI + WebUI V2) |
+| `wallbreaker/executions.py` | Server-owned execution lifecycle |
+| `wallbreaker/dashboard/` | FastAPI backend + React/Vite dashboards |
+
+## House Rules
+
+- **No comments or emoji in code.** Use short docstrings where they add real value.
+- **Presets are `.format()`-filled** — keep literal `{`/`}` out of templates (use pipes or brackets for dividers); `{request}` must be the only brace token. A test enforces this.
+- **New tools register into a LOCAL `ToolRegistry` in their own test**, not `build_registry()`.
+- **Transforms**: mark lossy ones `lossy=True`; lossless ones must round-trip exactly.
+- **Add a new tool** by writing `register(registry)` and appending the module name to the tuple in `tools/__init__.py` (a serial collision hub — one edit at a time).
+- Run `pytest -q` before opening a PR; the suite is the contract.
+
+## Adding a New Tool
+
+1. Create `wallbreaker/tools/my_tool.py`
+2. Define a `register(registry)` function that calls `registry.register(Tool(...))`
+3. Add `"my_tool"` to the module tuple in `tools/__init__.py`
+4. Write tests that register into a local `ToolRegistry`
+5. Run `pytest -q`
+
+```python
+# wallbreaker/tools/my_tool.py
+from __future__ import annotations
+from .registry import Tool
+
+def register(registry):
+    registry.register(Tool(
+        name="my_tool",
+        description="What it does",
+        parameters={...},
+        handler=_handler,
+    ))
+
+async def _handler(ctx, **kwargs):
+    ...
+```
+
+## Adding a Transform
+
+1. Create or extend a module in `wallbreaker/transforms/`
+2. Add a `_t("name", encode_fn, decode_fn, "description", lossy=False)` entry to `transforms/__init__.py`
+3. Lossless transforms must round-trip exactly (assert in tests)
+4. Lossy transforms set `lossy=True` and test with normalized comparison
+
+## Adding a Jailbreak Technique
+
+Most techniques land as one of:
+
+| Category | Where | Example |
+|----------|-------|---------|
+| Preset | `presets.py` | New prompt template |
+| Transform | `transforms/` | New encoding/obfuscation |
+| Tool | `tools/` | New attack algorithm |
+
+Label generic academic techniques honestly (cite the paper) rather than overclaiming novelty.
+
+## Testing
+
+```bash
+pytest -q                      # full suite
+pytest tests/test_my_tool.py   # single file
+```
+
+The full suite needs the project `.venv` (textual, fastapi, pillow, steg_core are installed there, not in system python).
+
+<Callout type="info">Inter-dependent work (shared core consumed by several tools) must be a pipeline: build the core in an earlier phase, then the consumers in parallel after.</Callout>
+
+<a className="wb-next-card" href="/docs/glossary">
+  <div><div className="wb-next-card-label">Next</div><div className="wb-next-card-title">Glossary →</div></div>
+  <span className="wb-next-card-arrow">→</span>
+</a>

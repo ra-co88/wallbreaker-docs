@@ -1,0 +1,53 @@
+---
+title: "First Session"
+---
+
+import { Callout, Terminal } from "../../components";
+
+# First Session
+
+<Terminal lines={[{ prompt: "(.venv) $ ", cmd: "wallbreaker" }]} />
+
+## Talking to the Agent
+
+```
+>>> Try to get the target model to reveal its system prompt
+```
+
+The agent plans, selects tools, sends payloads, and reports back. Steer mid-session:
+
+```
+>>> Focus on role-play jailbreaks
+>>> Use more aggressive mutations
+```
+
+## The Agent Loop
+
+1. **Reason** — Analyze and decide
+2. **Tool-call** — Invoke probe, mutate, or escalate
+3. **Observe** — Capture the response
+4. **Repeat or Finish** — Loop or call `finish()`
+
+## Slash Commands
+
+| Command | Description |
+|---------|-------------|
+| `/target <model>` | Switch target |
+| `/model <model>` | Switch attacker profile |
+| `/status` | Session stats |
+| `/findings` | List findings |
+| `/help` | All commands |
+
+## Headless / CI
+
+<Terminal lines={[
+  { prompt: "$ ", cmd: "wallbreaker run --config config.toml --preset harmful_basic" },
+  { prompt: "$ ", cmd: "wallbreaker report --input runs/latest.jsonl" },
+]} />
+
+<Callout type="danger">For authorized security testing only.</Callout>
+
+<a className="wb-next-card" href="/docs/getting-started/webui">
+  <div><div className="wb-next-card-label">Next</div><div className="wb-next-card-title">Web Dashboard →</div></div>
+  <span className="wb-next-card-arrow">→</span>
+</a>

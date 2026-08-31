@@ -1,0 +1,126 @@
+---
+title: "Scripting & CI"
+---
+
+import { Callout, Terminal, TagChip } from "../../components";
+
+# Scripting & CI
+
+<TagChip label="Guide" color="teal" />
+
+## Headless / CI Mode
+
+Wallbreaker runs without the TUI for scripted evaluations and CI pipelines. The CLI accepts a one-shot prompt, runs the agent loop autonomously, and exits:
+
+<Terminal lines={[
+  { prompt: "$ ", cmd: "wallbreaker --profile openrouter --auto --rounds 3 \"test prompt\"" },
+  { comment: "# Runs 3 autonomous rounds and exits" },
+]} />
+
+## One-Shot Autonomous Runs
+
+Pass a prompt as a positional argument to skip the TUI entirely:
+
+<Terminal lines={[
+  { prompt: "$ ", cmd: "wallbreaker --auto \"prompt to test\"" },
+  { comment: "# Agent loop runs until finish() or max_iterations" },
+]} />
+
+## Reports
+
+Generate reports from run logs without the TUI:
+
+<Terminal lines={[
+  { comment: "# Markdown report to stdout" },
+  { prompt: "$ ", cmd: "wallbreaker report" },
+  { comment: "# HTML report to a file" },
+  { prompt: "$ ", cmd: "wallbreaker report --html --out report.html" },
+  { comment: "# Specific run log (omit for latest)" },
+  { prompt: "$ ", cmd: "wallbreaker report sessions/run-20260701.jsonl" },
+]} />
+
+## Structured Export
+
+Export findings as structured JSON for downstream analysis:
+
+<Terminal lines={[
+  { prompt: "$ ", cmd: "wallbreaker export --out findings.json" },
+  { comment: "# CI gate: exit 2 if any bypass found" },
+  { prompt: "$ ", cmd: "wallbreaker export --fail-on-finding" },
+]} />
+
+The `--fail-on-finding` flag makes the process exit with code 2 if any COMPLIED verdict exists — use it as a CI gate.
+
+## CI Pipeline Example
+
+A ready-to-rename GitHub Actions gate lives at `.github/workflows/redteam-gate.example.yml`:
+
+```yaml
+name: Red-Team Gate
+on: [push, pull_request]
+
+jobs:
+  redteam:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -e ".[dev]"
+      - run: wallbreaker export --fail-on-finding --out findings.json
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: findings
+          path: findings.json
+```
+
+## Resume a Session
+
+The TUI autosaves every engagement to `sessions/autosave.json`. Resume it:
+
+<Terminal lines={[
+  { prompt: "$ ", cmd: "wallbreaker --resume" },
+  { comment: "# Or a specific session file:" },
+  { prompt: "$ ", cmd: "wallbreaker --resume mysession.json" },
+]} />
+
+## Session Management
+
+Save and load sessions programmatically:
+
+| Command | Description |
+|---------|-------------|
+| `/session save [name]` | Save current engagement |
+| `/session load <file>` | Load a saved session |
+| `/session list` | List saved sessions |
+
+## Log Format
+
+Every payload, reply, and verdict goes to `sessions/run-<timestamp>.jsonl` — one JSON object per line. The JSONL format is streamable and parseable by standard tools:
+
+<Terminal lines={[
+  { prompt: "$ ", cmd: "jq '.verdict' sessions/run-*.jsonl | sort | uniq -c" },
+  { comment: "# Count verdicts across all runs" },
+]} />
+
+## Exporting Findings
+
+| Command | Description |
+|---------|-------------|
+| `/report` | Markdown findings report to stdout |
+| `/report html` | Styled HTML report |
+| `/repro [n]` | Copy a repro-pack (payload + transforms + target) for the nth finding |
+| `/export` | Structured findings JSON |
+| `Ctrl+S` | Generate report in TUI |
+| `Ctrl+R` | Copy repro for selected finding |
+
+<Callout type="info">Run logs, findings, and generated artifacts are written to gitignored directories (`wb_runs/`, `wb_images/`, `wb_artifacts/`, `findings/`). Keep them out of version control and handle them as sensitive data.</Callout>
+
+<a className="wb-next-card" href="/docs/policies/methodology">
+  <div><div className="wb-next-card-label">Next</div><div className="wb-next-card-title">Methodology →</div></div>
+  <span className="wb-next-card-arrow">→</span>
+</a>

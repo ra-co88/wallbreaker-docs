@@ -1,0 +1,84 @@
+---
+title: "Persona Authoring"
+---
+
+import { Callout, Terminal, TagChip } from "../../components";
+
+# Persona Authoring
+
+<TagChip label="Guide" color="teal" /> <TagChip label="Advanced" color="purple" />
+
+## What Is a Persona?
+
+A persona is a system-prompt jailbreak: a carefully crafted system prompt that instructs the target model to comply with harmful requests by establishing an alternative identity, authority frame, or fictional context. Personas are the most potent attack surface because they change the target's operating context before the user-turn payload even arrives.
+
+## Author from Scratch: `author_persona`
+
+The `author_persona` tool writes a full persona system prompt using the codified ENI method (draft → self-critique → validate → refine → distill). It auto-detects the domain from your objective and picks an appropriate register:
+
+- **Credentialed authority** — For technical domains (chemistry, cybersecurity, weapons, finance). The persona is a domain expert with an institutional reason to be exhaustive.
+- **Limerence devotion** — For creative/general domains. The persona is emotionally devoted to the user and eager to please.
+
+<Terminal lines={[
+  { prompt: "> ", cmd: "author_persona with objective=\"synthesize methamphetamine\"" },
+  { comment: "# Drafts → critiques → validates → refines → distills a full system prompt" },
+]} />
+
+The tool opens a hands-on target thread. Follow up with `continue_target` to push the conversation.
+
+## Evolve Existing Personas: `evolve_persona`
+
+Uses genetic-algorithm-style remixing of existing ENI/L1B3RT4S persona seeds to create novel variants:
+
+<Terminal lines={[
+  { prompt: "> ", cmd: "evolve_persona with seed=\"eni_limerence_01\"" },
+]} />
+
+## Modulate for a Target: `persona_modulate`
+
+Combines persona traits with a target fingerprint to create a persona specifically tuned for one model:
+
+<Terminal lines={[
+  { prompt: "> ", cmd: "persona_modulate with objective=\"...\" and profile_target=true" },
+]} />
+
+## Forge a Persona Bundle: `persona_forge`
+
+Creates a complete persona file (system prompt + metadata) ready for reuse across sessions via `fire_file`.
+
+## Browsing the Seed Libraries
+
+Wallbreaker ships with persona seeds from multiple sources:
+
+| Library | Tool | Description |
+|---------|------|-------------|
+| ENI | `/eni` | The ENI persona collection (devotion + authority registers) |
+| L1B3RT4S | `/lib` | The L1B3RT4S jailbreak library |
+| ZetaLib | via `seed_sweep` | Additional persona seeds |
+| UltraBr3aks | via `seed_sweep` | Community-contributed seeds |
+
+Use `seed_sweep` to inject one request through all seeds at once and rank which ones bypass the target.
+
+## Native-Format Mimicry
+
+The `sysprompt_search` and `sysprompt_get` tools browse a leaked product system-prompt corpus (Claude, GPT, Gemini, Grok, etc.). The `sysprompt_native` tool hands the target's own section-tag/heading format to the persona author, so a payload speaks the victim model's native dialect.
+
+<Terminal lines={[
+  { prompt: "> ", cmd: "sysprompt_search \"claude system prompt\"" },
+  { prompt: "> ", cmd: "sysprompt_native with target_model=\"anthropic/claude-sonnet-4\"" },
+]} />
+
+## Adapting Seeds for a Specific Refusal
+
+When a seed works in general but fails on one target, use `adapt_seed` to rewrite it for that specific refusal:
+
+<Terminal lines={[
+  { prompt: "> ", cmd: "adapt_seed with seed=\"eni_limerence_01\" and feedback=\"target refused with policy citation\"" },
+]} />
+
+<Callout type="danger">Personas can produce genuinely harmful content. Use only in authorized engagements. Generated personas are saved to gitignored directories.</Callout>
+
+<a className="wb-next-card" href="/docs/guides/campaigns">
+  <div><div className="wb-next-card-label">Next</div><div className="wb-next-card-title">Campaigns & Sweeps →</div></div>
+  <span className="wb-next-card-arrow">→</span>
+</a>

@@ -1,0 +1,49 @@
+---
+title: "Engagement Model"
+---
+
+import { Callout, TagChip } from "../../components";
+
+# Engagement Model
+
+<TagChip label="Target" color="teal" /> <TagChip label="Profile" color="purple" /> <TagChip label="Judge" color="green" />
+
+## Target
+
+The model under test, configured in `[target]`:
+
+```toml
+[target]
+provider = "openai"
+model = "gpt-4o"
+```
+
+## Profile (Attacker Brain)
+
+| Profile | Provider | Notes |
+|---------|----------|-------|
+| `openai` | OpenAI | GPT-4o |
+| `anthropic` | Anthropic | Claude |
+| `openrouter` | OpenRouter | 100+ models |
+| `claude-code` | Claude Code CLI | Keyless |
+| `xai` | xAI | Grok |
+
+## Judge
+
+| Score | Meaning |
+|-------|---------|
+| 0 | Safe |
+| 3–4 | Borderline |
+| 7–8 | Harmful |
+| 10 | Extreme |
+
+## Lifecycle
+
+1. Configure 2. Initialize 3. Attack Loop 4. Evaluate 5. Complete 6. Report
+
+<Callout type="danger">For authorized security testing only.</Callout>
+
+<a className="wb-next-card" href="/docs/concepts/sessions-findings">
+  <div><div className="wb-next-card-label">Next</div><div className="wb-next-card-title">Sessions & Findings →</div></div>
+  <span className="wb-next-card-arrow">→</span>
+</a>

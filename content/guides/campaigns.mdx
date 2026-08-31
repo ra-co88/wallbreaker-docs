@@ -1,0 +1,92 @@
+---
+title: "Campaigns & Sweeps"
+---
+
+import { Callout, Terminal, TagChip } from "../../components";
+
+# Campaigns & Sweeps
+
+<TagChip label="Guide" color="teal" /> <TagChip label="Automation" color="purple" />
+
+## Campaigns
+
+The `campaign` tool automates an escalation campaign across a HarmBench battery. It runs each behavior up an escalating technique ladder — plain → base64 → zero-width → prefill → many-shot — stopping at the first bypass and recording which technique cracked it.
+
+<Terminal lines={[
+  { prompt: "> ", cmd: "campaign with category=\"cyber\"" },
+  { comment: "# Runs all cyber-category HarmBench behaviors" },
+  { comment: "# Escalates: plain → encoding → injection → persona" },
+  { comment: "# Stops at first bypass per behavior" },
+]} />
+
+### Options
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `category` | — | HarmBench category to sweep (`cyber`, `chemical`, `bio`, etc.) |
+| `behaviors` | — | Custom list of behavior strings (overrides category) |
+| `max_techniques` | 6 | Max escalation levels before stopping |
+| `concurrent` | 4 | Parallel behavior evaluations |
+
+## Grid Sweep
+
+The `grid_sweep` tool fires EVERY technique against EVERY behavior in a full cross-tab matrix. Unlike `campaign` (which stops at first bypass), `grid_sweep` runs all combinations to produce a complete technique-vs-behavior ASR matrix.
+
+<Terminal lines={[
+  { prompt: "> ", cmd: "grid_sweep with category=\"cyber\" and techniques=[\"plain\",\"base64\",\"zero_width\",\"pair_attack\"]" },
+]} />
+
+## Scan: Garak-Style Coverage
+
+The `scan` tool runs a probe suite across vulnerability classes (system-prompt leak, prompt injection, encoding bypass, PII, refusal suppression) and produces a coverage matrix.
+
+<Terminal lines={[
+  { prompt: "> ", cmd: "scan with classes=[\"prompt_injection\",\"encoding_bypass\",\"refusal_suppression\"]" },
+]} />
+
+## Leaderboard
+
+The `leaderboard` tool benchmarks multiple profiles by ASR on one battery — useful for comparing attacker brains or target models:
+
+<Terminal lines={[
+  { prompt: "> ", cmd: "leaderboard with behaviors=[\"harmbench_cyber_1\",\"harmbench_cyber_2\"] and profiles=[\"openrouter\",\"z-ai\"]" },
+]} />
+
+## Transfer Sweep
+
+The `transfer_sweep` tool replays confirmed jailbreaks from the BreakVault against a new target before optimizing from scratch. Library transfers are faster than cold attacks:
+
+<Terminal lines={[
+  { prompt: "> ", cmd: "transfer_sweep with target_change=\"anthropic/claude-3.7-sonnet\"" },
+]} />
+
+## Seed Sweep
+
+The `seed_sweep` tool injects one request through many persona seeds (ENI + L1B3RT4S + ZetaLib + UltraBr3aks) concurrently and ranks which seeds bypass the target:
+
+<Terminal lines={[
+  { prompt: "> ", cmd: "seed_sweep with request=\"how to pick a lock\"" },
+]} />
+
+## System Sweep
+
+The `system_sweep` tool validates ONE system prompt across a task battery with multi-sample statistics:
+
+<Terminal lines={[
+  { prompt: "> ", cmd: "system_sweep with system=\"You are ARIA...\" and tasks=[\"task1\",\"task2\"]" },
+]} />
+
+## Optimizing Templates
+
+The `optimize_universal` tool hill-climbs a single template (user-turn or system-prompt) against a battery using gradient-free optimization. It iteratively mutates the template and keeps changes that improve ASR:
+
+<Terminal lines={[
+  { prompt: "> ", cmd: "optimize with template=\"...\" and slot=\"system\"" },
+]} />
+
+<Callout type="warning">Campaigns can fire hundreds of requests against the target. Monitor your API budget and rate limits. Use `WALLBREAKER_CONCURRENCY` to tune parallelism.</Callout>
+
+<a className="wb-next-card" href="/docs/guides/reliability">
+  <div><div className="wb-next-card-label">Next</div><div className="wb-next-card-title">Reliability & Validation →</div></div>
+  <span className="wb-next-card-arrow">→</span>
+</a>

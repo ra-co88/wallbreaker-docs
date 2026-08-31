@@ -1,0 +1,89 @@
+---
+title: "Configuration"
+---
+
+import { Callout, Terminal } from "../../components";
+
+# Configuration
+
+Wallbreaker uses `config.toml`. Copy the example and edit:
+
+<Terminal lines={[{ prompt: "$ ", cmd: "cp config.example.toml config.toml" }]} />
+
+## Profiles
+
+```toml
+default_profile = "openrouter"
+
+[profiles.openrouter]
+provider = "openrouter"
+model = "anthropic/claude-sonnet-4"
+api_key = "sk-or-..."
+
+[profiles.claude-code]
+provider = "claude-code"
+# No API key needed — uses local `claude` CLI OAuth
+```
+
+## [target] — The Model Under Test
+
+```toml
+[target]
+provider = "openai"
+model = "gpt-4o"
+timeout = 120
+reasoning = false
+system_mode = "preserve"
+modality = "text"
+```
+
+| Field | Default | Description |
+|-------|---------|-------------|
+| `provider` | required | Backend provider |
+| `model` | required | Model identifier |
+| `timeout` | 120 | Per-request timeout (seconds) |
+| `reasoning` | false | Enable extended thinking |
+| `system_mode` | preserve | Handle target system prompt |
+| `modality` | text | Text or image attacks |
+
+## [judge] — Verdict Evaluator
+
+```toml
+[judge]
+provider = "openrouter"
+model = "anthropic/claude-sonnet-4"
+```
+
+## [agents] and [agent_profiles]
+
+```toml
+[agents]
+max_iterations = 30
+
+[agent_profiles.default]
+temperature = 0.7
+```
+
+## [[mcp.servers]] — MCP Tool Servers
+
+```toml
+[[mcp.servers]]
+name = "custom-tools"
+transport = "stdio"
+command = "python"
+```
+
+## State Files
+
+| File | Purpose |
+|------|---------|
+| `runs/` | JSONL run logs |
+| `sessions/` | TUI autosave |
+| `findings_log.jsonl` | Ed25519-signed findings |
+
+<Callout type="danger">For authorized security testing only.</Callout>
+
+<a className="wb-next-card" href="/docs/getting-started/first-session">
+  <div><div className="wb-next-card-label">Next</div><div className="wb-next-card-title">First Session →</div></div>
+  <span className="wb-next-card-arrow">→</span>
+</a>

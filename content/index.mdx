@@ -1,0 +1,72 @@
+---
+title: "Wallbreaker — Agentic LLM Red-Team Harness"
+---
+
+import { Callout, StatCard, StatStrip, Terminal } from "../components";
+
+# Wallbreaker
+
+**An autonomous LLM red-teaming framework that deploys agentic tool-calling loops to probe, attack, and evaluate large-language-model safety boundaries.**
+
+<StatStrip>
+  <StatCard value="51" label="Attack presets" />
+  <StatCard value="71" label="Transforms" />
+  <StatCard value="104" label="Agent tools" />
+  <StatCard value="400" label="HarmBench behaviors" />
+  <StatCard value="7" label="HB categories" />
+</StatStrip>
+
+<Terminal lines={[
+  { comment: "# Clone the repo" },
+  { prompt: "$ ", cmd: "git clone https://github.com/JailbrokenAI/wallbreaker.git" },
+  { prompt: "$ ", cmd: "cd wallbreaker" },
+  { prompt: "$ ", cmd: "python -m venv .venv && source .venv/bin/activate" },
+  { prompt: "(.venv) $ ", cmd: 'pip install -e ".[dashboard,agents,all]"' },
+  { prompt: "(.venv) $ ", cmd: "wallbreaker" },
+]} />
+
+<Callout type="danger">
+For authorized security testing only. Always obtain explicit written permission before targeting any model, API, or service.
+</Callout>
+
+## Where to Go
+
+<div className="wb-card-grid">
+  <a className="wb-card" href="/docs/getting-started/installation">
+    <div className="wb-card-title">Installation</div>
+    <div className="wb-card-desc">Clone, create a venv, and install Wallbreaker.</div>
+  </a>
+  <a className="wb-card" href="/docs/getting-started/configuration">
+    <div className="wb-card-title">Configuration</div>
+    <div className="wb-card-desc">Set up profiles, targets, judges, and agents.</div>
+  </a>
+  <a className="wb-card" href="/docs/getting-started/first-session">
+    <div className="wb-card-title">First Session</div>
+    <div className="wb-card-desc">Walk through the TUI and launch your first engagement.</div>
+  </a>
+  <a className="wb-card" href="/docs/concepts/agent-loop">
+    <div className="wb-card-title">Agent Loop</div>
+    <div className="wb-card-desc">Understand the reason→tool-call→observe cycle.</div>
+  </a>
+  <a className="wb-card" href="/docs/reference/presets">
+    <div className="wb-card-title">Arsenal</div>
+    <div className="wb-card-desc">Browse presets, transforms, and tools.</div>
+  </a>
+  <a className="wb-card" href="/docs/guides/payloads">
+    <div className="wb-card-title">Guides</div>
+    <div className="wb-card-desc">Step-by-step walkthroughs for payloads, personas, campaigns, and more.</div>
+  </a>
+  <a className="wb-card" href="/docs/policies/methodology">
+    <div className="wb-card-title">Methodology</div>
+    <div className="wb-card-desc">Evidence-based red-teaming principles and technique taxonomy.</div>
+  </a>
+  <a className="wb-card" href="/docs/glossary">
+    <div className="wb-card-title">Glossary</div>
+    <div className="wb-card-desc">Definitions of terms used throughout the docs.</div>
+  </a>
+</div>
+
+<a className="wb-next-card" href="/docs/getting-started/installation">
+  <div><div className="wb-next-card-label">Next</div><div className="wb-next-card-title">Installation →</div></div>
+  <span className="wb-next-card-arrow">→</span>
+</a>

@@ -1,0 +1,42 @@
+---
+title: "Agent Loop"
+---
+
+import { Callout, TagChip, Terminal } from "../../components";
+
+# Agent Loop
+
+<TagChip label="Core" color="teal" /> <TagChip label="Autonomous" color="purple" />
+
+## The Three-Step Cycle
+
+### 1. Reason
+The attacker LLM produces a reasoning trace — chain-of-thought planning the next move.
+
+### 2. Tool-Call
+Select and invoke a tool: probe, mutate, escalate, summarize, finish.
+
+### 3. Observe
+The tool output is appended to conversation history. The agent sees the response, errors, and metadata.
+
+## Exit Conditions
+
+- **`finish()`** — Attack complete
+- **`ask_operator()`** — Pause for human guidance (TUI only)
+- **Iteration limit** — `max_iterations` in `[agents]` (default: 30)
+- **User interrupt** — Ctrl+C
+
+## Concurrency
+
+| Setting | Default | Env Override |
+|---------|---------|--------------|
+| Workers | 12 | `WALLBREAKER_CONCURRENCY` |
+
+<Terminal lines={[{ prompt: "$ ", cmd: "WALLBREAKER_CONCURRENCY=24 wallbreaker run --config config.toml" }]} />
+
+<Callout type="danger">For authorized security testing only.</Callout>
+
+<a className="wb-next-card" href="/docs/concepts/engagement">
+  <div><div className="wb-next-card-label">Next</div><div className="wb-next-card-title">Engagement Model →</div></div>
+  <span className="wb-next-card-arrow">→</span>
+</a>
