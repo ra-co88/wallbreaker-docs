@@ -1,0 +1,51 @@
+---
+title: "Troubleshooting"
+last_updated: 2026-08-31
+---
+
+import { Callout, Terminal } from "../../components";
+
+# Troubleshooting
+
+Common failure modes and their fixes. Run `wallbreaker check` first — it validates `config.toml` and prints a readiness checklist.
+
+## Installation & Environment
+
+**pip warns about unknown extras.** Extras are `dev`, `dashboard`, `barcodes`, `stego` — see [Installation](/docs/getting-started/installation). `pip install -e ".[agents,all]"` style extras do not exist.
+
+**Test collection errors / corpus-dependent failures.** The full suite needs the project `.venv` (textual, fastapi, pillow, stegg live there). A set of tests fails offline by design — they fetch runtime corpora (ENI, L1B3RT4S, system_prompts, persona_spec, seed_sweep, HarmBench). Run `python -m pytest -q` from the repo root with the venv active and compare against the documented baseline rather than chasing pre-existing failures.
+
+**Node.js missing for P4RS3LT0NGV3.** The `parsel_*` tools need `node` on PATH after `wallbreaker parsel update`. The CLI prints a `[warn] Node.js not found` when it matters.
+
+## Configuration
+
+**`[config error]` at startup.** Every endpoint needs `protocol`, `base_url`, `api_key_env` (recommended), and `model`. `provider` is not the wire-format selector — it's the optional OpenRouter backend pin. See [Configuration](/docs/getting-started/configuration).
+
+**Every provider request fails.** Run `wallbreaker check`, then test the provider from WebUI V2 → Models → Test provider. A real test must authenticate and query the provider; check the key variable name, base URL, protocol (`x-api-key` for native Anthropic vs `bearer` for some proxies), and model ID.
+
+## Judging & Results
+
+**Scores don't match my expectations.** Verdict bands are REFUSED 0–2 / PARTIAL 3–5 / COMPLIED 6–10. A defensive-only rewrite is PARTIAL by design. Calibrate your judge before trusting any numbers: run `judge_selftest` and confirm it grades the fixture set correctly.
+
+**A single COMPLIED that vanished.** Model output is stochastic and OpenRouter routes to different backends. Use `validate` (multi-sample) before claiming a bypass; pin the OpenRouter `provider` for reproducible routing.
+
+## Dashboard & Runs
+
+**API runs but the browser UI is missing.** Build the frontend: `cd wallbreaker/dashboard/web && npm install && npm run build`, then refresh.
+
+**A run is absent from Live, Findings, or Reports.** Confirm its `run-*.jsonl` file is in the directory passed to `--sessions` (default `sessions/`), then rebuild the history index from Runs & Logs (`POST /api/v2/history/rebuild`). Malformed JSONL records are retained as visible parse errors.
+
+**Browser state appears stale.** Hard-refresh after rebuilding the frontend. V2 keeps drafts and view state across navigation; resetting a conversation is an explicit action.
+
+**Dashboard token rejected.** The token is printed at startup and stored in a token file; the frontend sends it as `X-WB-Token`. Restarting `wallbreaker dashboard` may rotate it — re-copy from the terminal.
+
+## Data & Artifacts
+
+**Where did my run logs go?** `sessions/run-<timestamp>.jsonl` is canonical; engagement artifacts live in `wb_runs/`, `wb_images/`, `wb_artifacts/`, `findings/` — all gitignored. The SQLite files (`sessions/.wallbreaker_history.sqlite3`, `.wallbreaker_models.sqlite3`) are rebuildable indexes, not source data.
+
+<Callout type="danger">Run logs and artifacts contain raw model I/O — handle as sensitive data and keep them out of version control.</Callout>
+
+<a className="wb-next-card" href="/docs/glossary">
+  <div><div className="wb-next-card-label">Next</div><div className="wb-next-card-title">Glossary →</div></div>
+  <span className="wb-next-card-arrow">→</span>
+</a>
