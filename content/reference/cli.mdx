@@ -63,7 +63,7 @@ All log-taking commands accept a run log path or a directory (default: latest in
 | `wallbreaker dashboard --host 0.0.0.0 --allow-network` | Expose beyond loopback (explicit risk acknowledgement) |
 | `wallbreaker dashboard --sessions sessions/` | Point the dashboard at a run-log directory |
 
-<Callout type="warning">Corpus integrity (the `library.lock.toml` SHA pins) is enforced automatically at load time — a mismatched runtime-fetched corpus fails closed. The interactive `corpus verify [--update]` helper exists in the codebase but is currently not routable from the CLI at this version.</Callout>
+<Callout type="info">Corpus integrity (the `library.lock.toml` SHA pins) is enforced automatically at load time — a mismatched runtime-fetched corpus fails closed. The interactive `corpus verify [--update]` command (also aliased as `parsel verify`) resolves actual HEAD SHAs via `git ls-remote` and updates the lock file. It shipped in roadmap-implementation (TG3) but its CLI dispatch was lost in the PR #21 × PR #24 merge; it is being restored in [PR #34](https://github.com/JailbrokenAI/wallbreaker/pull/34).</Callout>
 
 <a className="wb-next-card" href="/docs/reference/mcp-server">
   <div><div className="wb-next-card-label">Next</div><div className="wb-next-card-title">MCP Server →</div></div>
