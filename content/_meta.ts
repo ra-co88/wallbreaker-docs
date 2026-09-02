@@ -7,4 +7,5 @@ export default {
   policies: "Policies",
   contributing: "Contributing",
   glossary: "Glossary",
+  epilogue: { title: "Epilogue", display: "hidden" },
 };

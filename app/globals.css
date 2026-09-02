@@ -9,15 +9,37 @@
   --wb-teal: #2fd6c3;
   --wb-purple: #b48ef2;
   --wb-green: #46d68c;
-  --wb-font-heading: "JetBrains Mono", monospace;
-  --wb-font-body: "Inter", sans-serif;
-  --wb-font-mono: "JetBrains Mono", monospace;
+  --wb-font-heading: var(--font-jetbrains), "JetBrains Mono", monospace;
+  --wb-font-body: var(--font-inter), "Inter", sans-serif;
+  --wb-font-mono: var(--font-jetbrains), "JetBrains Mono", monospace;
+}
+
+/* ── accent color clock — same engine as the landing ──────────────────
+   One @property-registered custom property animates red → teal → purple
+   on a slow loop; every accent that uses var(--cycle) stays in sync.
+   Semantically fixed colors (callouts, terminal prompt, judge bands)
+   are intentionally NOT wired to the clock. */
+@property --cycle {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #e5484d;
+}
+@keyframes wb-cycle {
+  0%, 100% { --cycle: #e5484d; }
+  33%      { --cycle: #2fd6c3; }
+  66%      { --cycle: #b48ef2; }
+}
+:root {
+  animation: wb-cycle 8s infinite ease-in-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root { animation: none; --cycle: #2fd6c3; }
 }
 
 html { color-scheme: dark; }
 body { background: var(--wb-bg); color: var(--wb-text); font-family: var(--wb-font-body); }
 h1, h2, h3, h4, h5, h6 { font-family: var(--wb-font-heading); }
-a { color: var(--wb-teal); }
+a { color: var(--cycle); }
 hr { border-color: var(--wb-border); }
 pre, code { font-family: var(--wb-font-mono) !important; }
 pre { background: var(--wb-panel) !important; border: 1px solid var(--wb-border) !important; border-radius: 8px !important; }
@@ -28,15 +50,38 @@ td { padding: 10px 14px; border: 1px solid var(--wb-border); }
 tr:nth-child(even) { background: rgba(33, 21, 17, 0.5); }
 
 .wb-logo { display: flex; align-items: center; gap: 6px; font-family: var(--wb-font-heading); font-weight: 700; font-size: 1.15rem; letter-spacing: 0.08em; }
-.wb-logo-diamond { color: var(--wb-red); font-size: 1.3em; }
+.wb-logo-diamond { color: var(--cycle); font-size: 1.3em; transition: none; }
 .wb-logo-wall { color: var(--wb-text); }
 .wb-logo-breaker { color: var(--wb-red); }
 
 .wb-footer { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; width: 100%; padding: 8px 0; }
 .wb-footer-left { display: flex; align-items: center; }
 .wb-footer-tagline { color: var(--wb-muted); font-size: 0.82rem; font-style: italic; }
+.wb-footer-gem {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  color: var(--wb-muted); font-size: 0.82rem; font-style: italic;
+  text-decoration: none; cursor: pointer;
+  padding: 0.3rem 0.7rem; margin: -0.3rem -0.7rem;
+  border: 1px solid transparent; border-radius: 6px;
+  transition: color 0.3s, border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
+}
+.wb-footer-gem::before {
+  content: "◆";
+  font-size: 0.7em; font-style: normal;
+  color: var(--cycle);
+  transition: opacity 0.3s, transform 0.3s;
+}
+.wb-footer-gem:hover, .wb-footer-gem:focus-visible {
+  color: var(--cycle);
+  border-color: color-mix(in srgb, var(--cycle) 35%, transparent);
+  background: color-mix(in srgb, var(--cycle) 6%, transparent);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--cycle) 15%, transparent);
+}
+.wb-footer-gem:hover::before, .wb-footer-gem:focus-visible::before {
+  transform: rotate(45deg) scale(1.15);
+}
 .wb-footer-right { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 0.8rem; }
-.wb-footer-link { color: var(--wb-teal); text-decoration: none; transition: opacity 0.15s; }
+.wb-footer-link { color: var(--cycle); text-decoration: none; transition: opacity 0.15s; }
 .wb-footer-link:hover { opacity: 0.8; text-decoration: underline; }
 .wb-footer-sep { color: var(--wb-border); }
 .wb-footer-license { color: var(--wb-muted); }
@@ -52,7 +97,7 @@ tr:nth-child(even) { background: rgba(33, 21, 17, 0.5); }
 
 .wb-stat-strip { display: flex; flex-wrap: wrap; gap: 12px; margin: 20px 0; }
 .wb-stat-card { background: var(--wb-panel); border: 1px solid var(--wb-border); border-radius: 10px; padding: 16px 22px; flex: 1 1 140px; text-align: center; min-width: 120px; }
-.wb-stat-card-value { font-family: var(--wb-font-heading); font-size: 1.8rem; font-weight: 700; color: var(--wb-teal); display: block; }
+.wb-stat-card-value { font-family: var(--wb-font-heading); font-size: 1.8rem; font-weight: 700; color: var(--cycle); display: block; }
 .wb-stat-card-label { font-size: 0.78rem; color: var(--wb-muted); margin-top: 2px; display: block; }
 
 .wb-terminal { background: #0d0908; border: 1px solid var(--wb-border); border-radius: 10px; padding: 18px 20px; margin: 18px 0; font-family: var(--wb-font-mono); font-size: 0.85rem; line-height: 1.7; overflow-x: auto; }
@@ -69,15 +114,15 @@ tr:nth-child(even) { background: rgba(33, 21, 17, 0.5); }
 
 .wb-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin: 20px 0; }
 .wb-card { background: var(--wb-panel); border: 1px solid var(--wb-border); border-radius: 10px; padding: 20px 22px; transition: border-color 0.2s, transform 0.15s; text-decoration: none; color: var(--wb-text); display: block; }
-.wb-card:hover { border-color: var(--wb-teal); transform: translateY(-2px); }
+.wb-card:hover { border-color: var(--cycle); transform: translateY(-2px); }
 .wb-card-title { font-family: var(--wb-font-heading); font-weight: 700; font-size: 1rem; margin-bottom: 6px; color: var(--wb-text); }
 .wb-card-desc { font-size: 0.85rem; color: var(--wb-muted); line-height: 1.5; }
 
 .wb-next-card { display: flex; justify-content: space-between; align-items: center; background: var(--wb-panel); border: 1px solid var(--wb-border); border-radius: 10px; padding: 16px 22px; margin: 32px 0 8px; text-decoration: none; color: var(--wb-text); transition: border-color 0.2s, transform 0.15s; }
-.wb-next-card:hover { border-color: var(--wb-teal); transform: translateY(-1px); }
+.wb-next-card:hover { border-color: var(--cycle); transform: translateY(-1px); }
 .wb-next-card-label { font-size: 0.78rem; color: var(--wb-muted); text-transform: uppercase; font-family: var(--wb-font-heading); letter-spacing: 0.08em; }
-.wb-next-card-title { font-family: var(--wb-font-heading); font-weight: 600; font-size: 1.05rem; color: var(--wb-teal); }
-.wb-next-card-arrow { font-size: 1.3rem; color: var(--wb-teal); }
+.wb-next-card-title { font-family: var(--wb-font-heading); font-weight: 600; font-size: 1.05rem; color: var(--cycle); }
+.wb-next-card-arrow { font-size: 1.3rem; color: var(--cycle); }
 
 /* ── Nextra chrome: force dashboard palette ─────────────────────────── */
 html, body { background: var(--wb-bg) !important; }
@@ -102,12 +147,12 @@ aside a, aside button { color: var(--wb-muted) !important; }
 aside a:hover { color: var(--wb-text) !important; }
 aside a[aria-current="page"], aside li[class*="active"] > a {
   background: #3a1512 !important;
-  color: var(--wb-teal) !important;
+  color: var(--cycle) !important;
   border-radius: 6px;
 }
 aside a[aria-current="page"]::before {
   content: "•";
-  color: var(--wb-teal);
+  color: var(--cycle);
   margin-right: 6px;
 }
 
@@ -116,7 +161,7 @@ main h1 { color: var(--wb-text) !important; }
 main h2 { color: var(--wb-purple) !important; }
 main h3, main h4 { color: var(--wb-text) !important; }
 main p, main li { color: var(--wb-text); }
-main a { color: var(--wb-teal) !important; }
+main a { color: var(--cycle) !important; }
 
 /* breadcrumb current page */
 nav[aria-label="Breadcrumb"] li:last-child, nav[aria-label="breadcrumb"] li:last-child {

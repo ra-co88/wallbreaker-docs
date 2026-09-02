@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import { Footer, Layout, Navbar } from "nextra-theme-docs";
 import { Head } from "nextra/components";
 import { getPageMap } from "nextra/page-map";
@@ -12,6 +13,12 @@ export const metadata: Metadata = {
   title: "Wallbreaker Docs",
   description: "Documentation for Wallbreaker — the agentic LLM red-team harness",
 };
+
+// Self-hosted fonts: no render-blocking requests to fonts.googleapis.com,
+// zero layout shift, and automatic preloading. Exposed as CSS variables
+// consumed in app/globals.css and app/landing.css.
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
+const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains", display: "swap" });
 
 const navbar = (
   <Navbar
@@ -29,9 +36,9 @@ const footer = (
   <Footer>
     <div className="wb-footer">
       <div className="wb-footer-left">
-        <span className="wb-footer-tagline">
+        <a href="/break-the-wall" className="wb-footer-gem" title="break the wall — not the rules of engagement">
           break the wall — not the rules of engagement
-        </span>
+        </a>
       </div>
       <div className="wb-footer-right">
         <a href="https://vercel.com" target="_blank" rel="noopener noreferrer" className="wb-footer-link">
@@ -53,13 +60,14 @@ const footer = (
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" dir="ltr" className="dark" suppressHydrationWarning>
-      <Head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
-      </Head>
-      <body>
+    <html
+      lang="en"
+      dir="ltr"
+      className={`dark ${inter.variable} ${jetbrainsMono.variable}`}
+      suppressHydrationWarning
+    >
+      <Head />
+      <body suppressHydrationWarning>
         <Layout
           navbar={navbar}
           nextThemes={{ attribute: "class", defaultTheme: "dark", forcedTheme: "dark" }}
