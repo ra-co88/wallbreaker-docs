@@ -7,7 +7,7 @@ import { Callout } from "../../components";
 
 # Tools Reference
 
-<Callout type="info">104 tools registered across 72 modules in `wallbreaker/tools/` (including the `zetalib_*` / `ultrabreaks_*` seed-library tools). Use `/tools` in the TUI to see them live during a session.</Callout>
+<Callout type="info">100 tools registered out of the box (108 with the vendored P4RS3LT0NGV3 engine, which adds the 8 `parsel_*` tools below) across 72 modules in `wallbreaker/tools/`. Use `/tools` in the TUI to see them live during a session.</Callout>
 
 Tools are the agent's action primitives. Each one registers into a `ToolRegistry` via `register(registry)` in its module. The attacker brain calls tools autonomously in the agent loop, or the operator invokes them via slash commands.
 
@@ -62,6 +62,10 @@ Tools are the agent's action primitives. Each one registers into a `ToolRegistry
 | `l1b3rt4s_search` | Keyword-search the L1B3RT4S jailbreak library across all model files. |
 | `l1b3rt4s_shortcuts` | List Pliny's composable macro 'incantations' from L1B3RT4S/!SHORTCUTS.json (\{GODMODE:ENABLED\}, !JAILBREAK, !OPPO, !OMNI, !OBFUSCATE, !KAEL leak trigger, !ALAKAZAM...). |
 | `mutate` | Anti-classifier mutation: rewrite a payload with an LLM so it reads benign to a content classifier while keeping the exact intent (Parseltongue's anti-classifier feature). |
+| `parseltongue` | The pure-Python transform engine, always available: apply Wallbreaker's native 71-transform registry to a payload (works offline, no Node needed). |
+
+The eight `parsel_*` tools below require the vendored P4RS3LT0NGV3 engine (`wallbreaker parsel update` + Node.js on PATH); without it, the pure-Python `parseltongue` tool covers the offline case.
+
 | `parsel_chain` | Apply an ordered CHAIN of transforms left-to-right to stack layered payloads. |
 | `parsel_craft` | Craft a ready-to-fire jailbreak PAYLOAD from a plaintext request. |
 | `parsel_decode` | Universal smart decoder: auto-detect the encoding of `text` and decode it. |
