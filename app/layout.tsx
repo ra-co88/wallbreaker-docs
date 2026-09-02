@@ -48,7 +48,11 @@ const footer = (
           Powered by Vercel
         </a>
         <span className="wb-footer-sep">·</span>
-        <span className="wb-footer-license">AGPL-3.0-only</span>
+        <span className="wb-footer-license">AGPL-3.0-or-later</span>
+        <span className="wb-footer-sep">·</span>
+        <span className="wb-footer-license" title="Unofficial community documentation, maintained by @pt-act — not endorsed by the upstream maintainers">
+          Unofficial docs — community-maintained
+        </span>
         <span className="wb-footer-sep">·</span>
         <a href="https://github.com/JailbrokenAI/wallbreaker" target="_blank" rel="noopener noreferrer" className="wb-footer-link">GitHub (canonical)</a>
         <span className="wb-footer-sep">·</span>

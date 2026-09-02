@@ -22,5 +22,12 @@ Import this repository into Vercel (auto-detected as Next.js) — see
 
 ## License
 
-AGPL-3.0-only — same as the project it documents. For authorized security
+AGPL-3.0-or-later — same as the upstream project it documents. For authorized security
 testing only. *Break the wall — not the rules of engagement.*
+
+## Status
+
+**Unofficial community documentation**, maintained by [@pt-act](https://github.com/pt-act)
+(the project's #2 contributor). Not endorsed by the upstream maintainers — yet. Content is
+fact-checked against the codebase on every page; canonical sources remain the upstream
+repo linked in the footer.
