@@ -51,7 +51,7 @@ const DATA: Record<string, { tag: string; title: string; desc: string; feats: st
     tag: "CORPUS_ARRAY",
     title: "Corpus Array",
     desc: "The listening dish — persona genomes, jailbreak libraries, leaked system prompts, all callable as agent tools.",
-    feats: ["104 registered agent tools", "ENI persona genomes with vendor affinity", "zetalib, ultrabreaks, l1b3rt4s seed libraries", "Leaked PRODUCT system-prompt corpus"],
+    feats: ["100+ registered agent tools", "ENI persona genomes with vendor affinity", "zetalib, ultrabreaks, l1b3rt4s seed libraries", "Leaked PRODUCT system-prompt corpus"],
     link: "/docs/reference/tools",
   },
   mcp: {
@@ -444,7 +444,7 @@ export default function LandingPage() {
             <div className="hud-reads">
               <span className="r">PRESETS<em>51</em></span>
               <span className="r">TRANSFORMS<em>222</em></span>
-              <span className="r">TOOLS<em>104</em></span>
+              <span className="r">TOOLS<em>100+</em></span>
               <span className="r">BEHAVIORS<em>400</em></span>
             </div>
           </nav>
