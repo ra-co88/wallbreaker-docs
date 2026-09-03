@@ -14,7 +14,7 @@
   --wb-font-mono: var(--font-jetbrains), "JetBrains Mono", monospace;
 }
 
-/* ── accent color clock — same engine as the landing ──────────────────
+/* ── accent color clock ────────────────────────────────────────────────
    One @property-registered custom property animates red → teal → purple
    on a slow loop; every accent that uses var(--cycle) stays in sync.
    Semantically fixed colors (callouts, terminal prompt, judge bands)

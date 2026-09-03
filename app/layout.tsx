@@ -16,12 +16,13 @@ export const metadata: Metadata = {
 
 // Self-hosted fonts: no render-blocking requests to fonts.googleapis.com,
 // zero layout shift, and automatic preloading. Exposed as CSS variables
-// consumed in app/globals.css and app/landing.css.
+// consumed in app/globals.css.
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains", display: "swap" });
 
 const navbar = (
   <Navbar
+    logoLink="/docs"
     logo={
       <span className="wb-logo">
         <span className="wb-logo-diamond">◆</span>
